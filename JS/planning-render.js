@@ -11,7 +11,7 @@ import { updateCell } from "./planning-core.js";
 export function renderPlanning() {
 
     const table = document.getElementById("planning");
-    const tbody = table.querySelector("tbody");Mathieu
+    const tbody = table.querySelector("tbody");
     const headerRow = table.querySelector("thead tr");
 
     // Reset

@@ -10,24 +10,19 @@ export function listenPlanning(docId, onUpdate) {
 
     onSnapshot(ref, (snap) => {
 
+        let data = {};
+
         if (snap.exists()) {
-
-            const data = snap.data();
-
-            planning = {
-                employes: data.employes || ["MATHIEU", "ALEXANDER", "LAURENT"],
-                data: data.data || {},
-                presence: data.presence || {}
-            };
-
-        } else {
-
-            planning = {
-                employes: ["MATHIEU", "ALEXANDER", "LAURENT"],
-                data: {},
-                presence: {}
-            };
+            data = snap.data();
         }
+
+        planning = {
+            employes: Array.isArray(data.employes) ? data.employes : [],
+            data: data.data || {},
+            presence: data.presence || {}
+        };
+
+        console.log("planning chargé :", planning);
 
         onUpdate(planning);
     });

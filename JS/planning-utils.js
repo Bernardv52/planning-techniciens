@@ -4,7 +4,7 @@
 // JOURS FÉRIÉS
 // ======================================================
 
-function calculerPaques(annee) {
+export function calculerPaques(annee) {
     const a = annee % 19;
     const b = Math.floor(annee / 100);
     const c = annee % 100;
@@ -22,7 +22,7 @@ function calculerPaques(annee) {
     return new Date(annee, mois - 1, jour);
 }
 
-function getJoursFeries(annee) {
+export function getJoursFeries(annee) {
     const feries = [
         new Date(annee, 0, 1),
         new Date(annee, 4, 1),

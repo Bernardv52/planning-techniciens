@@ -1,5 +1,5 @@
 import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { db } from "./firebase.js";
+import { db } from "./APIS/firebase.js";
 import { user } from "./auth.js";
 
 export async function setEditing(cellId) {

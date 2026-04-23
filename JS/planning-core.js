@@ -1,5 +1,5 @@
 import { doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { db } from "./firebase.js";
+import { db } from "./APIS/firebase.js";
 
 export let planning = {};
 export function listenPlanning(docId, onUpdate) {

@@ -6,12 +6,12 @@ import { activerDragAndDropColonnes, rendreHeadersInteractifs } from "./planning
 export function refreshPlanning() {
 
     // 1️⃣ Rendu DOM
-    renderPlanning();
+    renderPlanning(); // 1. construit le tableau
 
     // 2️⃣ UI (interactions)
     rendreHeadersInteractifs();
     activerDragAndDropColonnes();
 
     // 3️⃣ Présence (multi-user)
-    renderPresence();
-}
+    renderPresence(); // 2. applique les utilisateurs
+}  

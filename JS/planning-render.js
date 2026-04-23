@@ -1,3 +1,4 @@
+import { getJoursFeries } from "./planning-utils.js";
 import { planning } from "./planning-core.js";
 import { setEditing, clearEditing } from "./presence.js";
 import { updateCell } from "./planning-core.js";
@@ -13,32 +14,44 @@ export function renderPlanning() {
     const tbody = table.querySelector("tbody");
     const headerRow = table.querySelector("thead tr");
 
-    // 🔹 Reset
+    // Reset
     tbody.innerHTML = "";
     headerRow.innerHTML = "<th>DATE</th>";
 
-    // 🔹 Headers employés
-    (planning.employes || []).forEach(emp => {
+    // Employés
+    const employes = planning.employes || [];
+
+    employes.forEach(emp => {
         const th = document.createElement("th");
         th.textContent = emp;
         headerRow.appendChild(th);
     });
 
-    // 🔹 Dates triées (important pour cohérence)
+    // 🔥 Jours fériés (année courante du planning)
+    const annee = new Date().getFullYear();
+    const feries = getJoursFeries(annee);
+
+    // Dates triées
     const dates = Object.keys(planning.data || {}).sort();
 
     dates.forEach(date => {
 
         const tr = document.createElement("tr");
 
-        // 📅 Colonne date
+        // 📅 DATE
         const tdDate = document.createElement("td");
         tdDate.textContent = formatDate(date);
         tdDate.classList.add("date-cell");
+
+        // 🎨 jour férié
+        if (feries.includes(date)) {
+            tdDate.style.backgroundColor = "#ffe5e5";
+        }
+
         tr.appendChild(tdDate);
 
-        // 📦 Cellules employés
-        (planning.employes || []).forEach((_, colIndex) => {
+        // 👥 cellules employés
+        employes.forEach((_, colIndex) => {
 
             const td = document.createElement("td");
             td.contentEditable = true;
@@ -49,12 +62,12 @@ export function renderPlanning() {
             const value = planning.data?.[date]?.cells?.[colIndex] || "";
             td.innerText = value;
 
-            // 🟡 Focus → présence utilisateur
+            // focus → présence
             td.addEventListener("focus", () => {
                 setEditing(cellId);
             });
 
-            // 💾 Blur → sauvegarde Firestore
+            // blur → save
             td.addEventListener("blur", () => {
                 updateCell(date, colIndex, td.innerText);
                 clearEditing();
@@ -68,12 +81,10 @@ export function renderPlanning() {
 }
 
 /**
- * 🟣 OVERLAY PRESENCE (multi-utilisateurs)
- * ➜ surlignage des cellules en cours d'édition
+ * 🟣 PRESENCE MULTI-UTILISATEURS
  */
 export function renderPresence() {
 
-    // 🔹 Reset visuel (important)
     document.querySelectorAll("#planning td").forEach(td => {
         td.style.outline = "";
         td.title = "";
@@ -85,9 +96,7 @@ export function renderPresence() {
 
         if (!user.editing) return;
 
-        const cell = document.querySelector(
-            `[data-id="${user.editing}"]`
-        );
+        const cell = document.querySelector(`[data-id="${user.editing}"]`);
 
         if (cell) {
             cell.style.outline = `2px solid ${user.color || "blue"}`;
@@ -97,7 +106,7 @@ export function renderPresence() {
 }
 
 /**
- * 🧩 FORMAT DATE (optionnel mais propre)
+ * 🧩 FORMAT DATE
  */
 function formatDate(dateStr) {
     try {

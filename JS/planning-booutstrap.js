@@ -1,5 +1,5 @@
 import { listenPlanning } from "./planning-core.js";
-import { renderPlanning } from "./planning-render.js";
+import { refreshPlanning } from "./planning-edit.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     listenPlanning(docId, () => {
         console.log("🔄 Mise à jour planning reçue");
-        renderPlanning();
+        refreshPlanning();
+
     });
 
 });

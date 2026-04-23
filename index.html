@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Planning</title>
+<link rel="stylesheet" href="./CSS/planning.css">
+</head>
+<body>
+<div id="loginBox">
+    <h3>Connexion</h3>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Mot de passe">
+    <button id="loginBtn">Se connecter</button>
+</div>
+<div class="planning-container">
+
+    <h2>Planning</h2>
+    <!-- <img id="logoPlanning" src="Logo/Logo.png" style="display:none;"> -->
+     <div class="toolbar">
+        <span>Couleur :</span>
+        <button class="color-btn" data-color="#000000" style="background:#000000"></button>
+        <button class="color-btn" data-color="#D5F3E7" style="background:#D5F3E7"></button>
+        <button class="color-btn" data-color="#E0EECA" style="background:#E0EECA"></button>
+        <button class="color-btn" data-color="#d32f2f" style="background:#d32f2f"></button>
+        <button class="color-btn" data-color="#FFFF00" style="background:#FFFF00"></button>
+        <button class="color-btn" data-color="#1976d2" style="background:#1976d2"></button>
+        <button class="color-btn" data-color="#388e3c" style="background:#388e3c"></button>
+        <button class="color-btn" data-color="#f57c00" style="background:#f57c00"></button>
+        <button id="boldBtn"><b>Gras</b></button>
+        <button id="brushBtn">🖌 Pinceau</button>
+        <span class="span">Copie/colle cellules
+        <button id="copyBtn">Copier</button>
+        <button id="pasteBtn">Coller</button></span>
+        
+    </div>
+    <div class="top-bar">
+        <label>Choisir l'année :</label>
+        <select id="anneeSelect"></select>
+        <label>Choisir le quadrimestre :</label>
+        <select id="moisSelect">
+            <option value="1">Janvier - Avril</option>
+            <option value="2">Mai - Août</option>
+            <option value="3">Septembre - Décembre</option>
+        </select>
+        <button id="addEmploye">Ajout tech</button>
+        <button id="removeEmploye">Supprime tech</button>
+    </div>
+    <div class="table-scroll">
+        <table id="planning">
+            <thead>
+                <tr>
+
+                    <th>DATE</th>
+                    
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+   
+
+</div>
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <h3>Supprimer un employé</h3>
+    <select id="employeeSelect"></select>
+        <div style="margin-top:15px;display:flex;justify-content:space-between;">
+        <button id="confirmDelete">Supprimer</button>
+        <button id="cancelDelete">Annuler</button>
+        </div>
+  </div>
+</div>
+<select id="exportFormat">
+  <option value="pdf">PDF</option>
+  <option value="xlsx">Excel (.xlsx)</option>
+  <option value="csv">CSV</option>
+  <option value="docx">Word (.docx)</option>
+</select>
+<button id="exportBtn">Exporter</button>
+<script type="module" src="./JS/APIS/loginFirebase.js"></script>
+<script type="module" src="./JS/firebase.js"></script>
+<script type="module" src="./JS/planningbooutstrap.js"></script>
+<script src="./JS/barreTools.js" defer></script>
+<script src="./JS/exportPlanning.js" defer></script>
+ <script src="./JS/LIBS/xlsx.full.min.js"></script>
+<script src="./JS/LIBS/jspdf.umd.min.js"></script>
+<script src="./JS/LIBS/jspdf-autotable.js"></script>
+<script src="./JS/LIBS/Build-index.js"></script>
+<script src="./JS/LIBS/index.umd.js"></script>  
+<script src="./JS/LIBS/FileSaver.min.js"></script>
+
+
+</body>
+</html>

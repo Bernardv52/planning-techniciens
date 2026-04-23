@@ -1,0 +1,168 @@
+:root {
+    --jour1: rgb(213,243,231);
+    --jour2: rgb(224,238,202);
+    --weekend: rgb(145,161,160);
+    --ferie: rgb(164,154,142);
+    --header: #E3A577;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.planning-container {
+    width: 100%;
+}
+.top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    padding: 10px 0;
+    border-bottom: 2px solid black;
+}
+.span {
+color: rgb(254, 254, 255);
+background: #353232;
+padding: 2px 6px;
+border-radius: 4px;
+display: inline-block;
+}
+
+.table-scroll {
+    max-height: 750px;
+    overflow-y: auto;
+    background: white;
+}
+
+/* =========================
+   TABLEAU
+========================= */
+
+#planning {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed; /* IMPORTANT : colonnes stables */
+}
+
+/* =========================
+   HEADER
+========================= */
+
+#planning thead th {
+    position: sticky;
+    top: 0;
+    background: var(--header);
+    z-index: 10;
+    border: 2px solid black;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Hover header */
+#planning thead th:hover {
+    background: #d98f5f;
+}
+
+/* Petit icone édition */
+#planning thead th:not(:first-child)::after {
+    content: " ✏️";
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* =========================
+   CELLULES
+========================= */
+
+#planning td {
+    border: 1px solid black;
+    padding: 6px 4px;
+    text-align: center;
+    vertical-align: middle;
+
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* =========================
+   COLONNE DATE
+========================= */
+
+#planning th:first-child,
+#planning td:first-child {
+    width: 222px;          /* un peu plus large mais pas énorme */
+    min-width: 222px;
+    max-width: 222px;
+}
+
+.date-cell {
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+/* =========================
+   DRAG & DROP
+========================= */
+
+#planning th.drag-over-left {
+    border-left: 4px solid black;
+}
+
+#planning th.drag-over-right {
+    border-right: 4px solid black;
+}
+
+/* =========================
+   BOUTONS
+========================= */
+
+.top-bar button {
+    margin-left: 15px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+.toolbar {
+    margin-bottom: 10px;
+}
+
+.color-btn {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #999;
+    cursor: pointer;
+    margin-right: 5px;
+}
+/*Style Modal*/
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 300px;
+}
+
+.modal-buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+

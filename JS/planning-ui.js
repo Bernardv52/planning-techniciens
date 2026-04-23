@@ -1,4 +1,4 @@
-import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from "./APIS/firebase.js";
 import { planning } from "./planning-core.js";
 
@@ -51,10 +51,11 @@ export function activerDragAndDropColonnes() {
             // =========================
             // 3. push Firestore (UNE seule fois)
             // =========================
-            await updateDoc(ref, {
+            await setDoc(ref, {
                 employes: planning.employes,
-                data: planning.data
-            });
+                data: planning.data,
+                presence: planning.presence || {}
+            }, { merge: true });
 
             dragIndex = null;
         };
@@ -83,9 +84,13 @@ export function rendreHeadersInteractifs() {
 
             planning.employes[index - 1] = nouveauNom.toUpperCase();
 
-            await updateDoc(doc(db, "planning", window.currentDoc), {
-                employes: planning.employes
-            });
+            const ref = doc(db, "planning", window.currentDoc);
+
+            await setDoc(ref, {
+                employes: planning.employes,
+                data: planning.data,
+                presence: planning.presence || {}
+            }, { merge: true });
         };
 
         // =========================
@@ -107,10 +112,13 @@ export function rendreHeadersInteractifs() {
                 cells.splice(index - 1, 1);
             }
 
-            await updateDoc(doc(db, "planning", window.currentDoc), {
+            const ref = doc(db, "planning", window.currentDoc);
+
+            await setDoc(ref, {
                 employes: planning.employes,
-                data: planning.data
-            });
+                data: planning.data,
+                presence: planning.presence || {}
+            }, { merge: true });
         };
     });
 }
@@ -127,13 +135,17 @@ export function initUI() {
 
             const nouveaux = [...(planning.employes || []), nom.toUpperCase()];
 
-            await updateDoc(ref, {
-                employes: nouveaux
-            });
+             await setDoc(ref, {
+                employes: nouveaux,
+                data: planning.data || {},
+                presence: planning.presence || {}
+            }, { merge: true });
+
+            console.log("✅ employés ajoutés :", nouveaux);
         });
     }
 
-    // 🔴 SUPPRESSION TECH (simple version)
+    // 🔴 SUPPRESSION TECH
     const removeBtn = document.getElementById("removeEmploye");
     if (removeBtn) {
         removeBtn.addEventListener("click", async () => {
@@ -147,9 +159,11 @@ export function initUI() {
 
             const nouveaux = planning.employes.filter(e => e !== nom.toUpperCase());
 
-            await updateDoc(ref, {
-                employes: nouveaux
-            });
+            await setDoc(ref, {
+                employes: nouveaux,
+                data: planning.data || {},
+                presence: planning.presence || {}
+            }, { merge: true });
         });
     }
 
@@ -165,8 +179,7 @@ export function initUI() {
     // 🎨 COULEURS
     document.querySelectorAll(".color-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            const color = btn.dataset.color;
-            document.execCommand("backColor", false, color);
+            document.execCommand("backColor", false, btn.dataset.color);
         });
     });
 

@@ -2,7 +2,6 @@ import { doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/1
 import { db } from "./firebase.js";
 
 export let planning = {};
-
 export function listenPlanning(docId, onUpdate) {
 
     window.currentDoc = docId;
@@ -12,7 +11,38 @@ export function listenPlanning(docId, onUpdate) {
     onSnapshot(ref, (snap) => {
 
         if (snap.exists()) {
-            planning = snap.data();
+
+            const data = snap.data();
+
+            planning = {
+                employes: data.employes || ["MATHIEU", "ALEXANDER", "LAURENT"],
+                data: data.data || {},
+                presence: data.presence || {}
+            };
+
+        } else {
+
+            planning = {
+                employes: ["MATHIEU", "ALEXANDER", "LAURENT"],
+                data: {},
+                presence: {}
+            };
+        }
+
+        onUpdate(planning);
+    });
+}
+
+/* export function listenPlanning(docId, onUpdate) {
+
+    window.currentDoc = docId;
+
+    const ref = doc(db, "planning", docId);
+
+    onSnapshot(ref, (snap) => {
+
+        if (snap.exists()) {
+            //planning = snap.data();
         } else {
             planning = {
                 employes: [],
@@ -23,7 +53,7 @@ export function listenPlanning(docId, onUpdate) {
 
         onUpdate(planning);
     });
-}
+} */
 
 export async function updateCell(date, col, value) {
 

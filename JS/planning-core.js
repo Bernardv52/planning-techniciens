@@ -28,6 +28,14 @@ export function listenPlanning(docId, onUpdate) {
     });
 }
 
+export async function updateCell(date, col, value) {
+
+    const ref = doc(db, "planning", window.currentDoc);
+
+    await updateDoc(ref, {
+        [`data.${date}.cells.${col}`]: value
+    });
+}
 /* export function listenPlanning(docId, onUpdate) {
 
     window.currentDoc = docId;
@@ -49,12 +57,3 @@ export function listenPlanning(docId, onUpdate) {
         onUpdate(planning);
     });
 } */
-
-export async function updateCell(date, col, value) {
-
-    const ref = doc(db, "planning", window.currentDoc);
-
-    await updateDoc(ref, {
-        [`data.${date}.cells.${col}`]: value
-    });
-}

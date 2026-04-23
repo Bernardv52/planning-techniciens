@@ -114,3 +114,74 @@ export function rendreHeadersInteractifs() {
         };
     });
 }
+export function initUI() {
+
+    // 🔵 AJOUT TECH
+    const addBtn = document.getElementById("addEmploye");
+    if (addBtn) {
+        addBtn.addEventListener("click", async () => {
+            const nom = prompt("Nom du technicien ?");
+            if (!nom) return;
+
+            const ref = doc(db, "planning", window.currentDoc);
+
+            const nouveaux = [...(planning.employes || []), nom.toUpperCase()];
+
+            await updateDoc(ref, {
+                employes: nouveaux
+            });
+        });
+    }
+
+    // 🔴 SUPPRESSION TECH (simple version)
+    const removeBtn = document.getElementById("removeEmploye");
+    if (removeBtn) {
+        removeBtn.addEventListener("click", async () => {
+
+            if (!planning.employes.length) return;
+
+            const nom = prompt("Nom du technicien à supprimer ?");
+            if (!nom) return;
+
+            const ref = doc(db, "planning", window.currentDoc);
+
+            const nouveaux = planning.employes.filter(e => e !== nom.toUpperCase());
+
+            await updateDoc(ref, {
+                employes: nouveaux
+            });
+        });
+    }
+
+    // 🔐 LOGIN (simple log pour test)
+    const loginBtn = document.getElementById("loginBtn");
+    if (loginBtn) {
+        loginBtn.addEventListener("click", () => {
+            const email = document.getElementById("email").value;
+            console.log("Login demandé :", email);
+        });
+    }
+
+    // 🎨 COULEURS
+    document.querySelectorAll(".color-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const color = btn.dataset.color;
+            document.execCommand("backColor", false, color);
+        });
+    });
+
+    // 🅱️ GRAS
+    const boldBtn = document.getElementById("boldBtn");
+    if (boldBtn) {
+        boldBtn.addEventListener("click", () => {
+            document.execCommand("bold");
+        });
+    }
+
+    // 📋 COPY / PASTE (placeholder)
+    const copyBtn = document.getElementById("copyBtn");
+    const pasteBtn = document.getElementById("pasteBtn");
+
+    if (copyBtn) copyBtn.addEventListener("click", () => console.log("Copie"));
+    if (pasteBtn) pasteBtn.addEventListener("click", () => console.log("Coller"));
+}

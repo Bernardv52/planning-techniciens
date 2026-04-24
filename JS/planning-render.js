@@ -138,6 +138,27 @@ export function renderPlanning() {
         date.setDate(date.getDate() + 1);
     }
 }
+export function renderPresence() {
+
+    document.querySelectorAll("#planning td").forEach(td => {
+        td.style.outline = "";
+        td.title = "";
+    });
+
+    const presence = planning.presence || {};
+
+    Object.values(presence).forEach(user => {
+
+        if (!user.editing) return;
+
+        const cell = document.querySelector(`[data-id="${user.editing}"]`);
+
+        if (cell) {
+            cell.style.outline = `2px solid ${user.color || "blue"}`;
+            cell.title = user.name || "Utilisateur";
+        }
+    });
+}
 
 // =========================
 function formatDate(dateStr) {

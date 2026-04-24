@@ -45,4 +45,25 @@ export function getJoursFeries(annee) {
 
     return feries.map(d => d.toISOString().split("T")[0]);
 }
+export function getDateRange(bloc, year) {
+
+    let start, end;
+
+    if (bloc === 1) {
+        start = new Date(year, 0, 1);   // Janvier
+        end   = new Date(year, 3, 30);  // Avril
+    }
+
+    if (bloc === 2) {
+        start = new Date(year, 4, 1);   // Mai
+        end   = new Date(year, 7, 31);  // Août
+    }
+
+    if (bloc === 3) {
+        start = new Date(year, 8, 1);   // Septembre
+        end   = new Date(year, 11, 31); // Décembre
+    }
+
+    return { start, end };
+}
 

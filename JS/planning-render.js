@@ -8,96 +8,80 @@ import { updateCell } from "./planning-core.js";
 // 🔵 RENDU PRINCIPAL DU PLANNING
 // ======================================================
 export function renderPlanning() {
-
-    const table = document.getElementById("planning");
-    const tbody = table.querySelector("tbody");
-    const headerRow = table.querySelector("thead tr");
-
-    // 🔥 reset
-    tbody.innerHTML = "";
-    headerRow.innerHTML = "<th>DATE</th>";
-
-    // 👥 employés
-    const employes = planning.employes || [];
-
-    employes.forEach(emp => {
-        const th = document.createElement("th");
-        th.textContent = emp;
-        headerRow.appendChild(th);
-    });
-
     // 📅 paramètres dynamiques
     const annee = parseInt(document.getElementById("anneeSelect").value);
     const bloc = parseInt(document.getElementById("moisSelect").value);
-
-    const { start, end } = getDateRange(bloc, annee);
+    console.log("ANNEE =", annee);
+    console.log("BLOC =", bloc);
     const feries = getJoursFeries(annee);
 
-    // ======================================================
-    // 🔥 génération des lignes
-    // ======================================================
-    let date = new Date(start);
+let date = new Date(annee, 0, 1);
+const dateFin = new Date(annee, 11, 31);
 
-    while (date <= end) {
+while (date <= dateFin) {
 
-        const dateISO = date.toISOString().split("T")[0];
+    const mois = date.getMonth();
 
-        const tr = document.createElement("tr");
+    // 🔥 FILTRE PAR BLOC (comme ton ancien code)
+    if (
+        (bloc === 1 && mois > 3) ||
+        (bloc === 2 && (mois < 4 || mois > 7)) ||
+        (bloc === 3 && mois < 8)
+    ) {
+        date.setDate(date.getDate() + 1);
+        continue;
+    }
 
-        // =========================
-        // 📅 COLONNE DATE
-        // =========================
-        const tdDate = document.createElement("td");
-        tdDate.textContent = formatDate(dateISO);
-        tdDate.classList.add("date-cell");
+    const dateISO = date.toISOString().split("T")[0];
 
-        // week-end
-        const day = date.getDay();
-        if (day === 0 || day === 6) {
-            tdDate.style.backgroundColor = "#91A1A0";
-        }
+    const tr = document.createElement("tr");
+
+    // DATE
+    const tdDate = document.createElement("td");
+    tdDate.textContent = formatDate(dateISO);
+    tdDate.classList.add("date-cell");
+
+    const day = date.getDay();
 
         // jours fériés
-        if (feries.includes(dateISO)) {
-            tdDate.style.backgroundColor = "#A49A8E";
-        }
+       if (feries.includes(dateISO)) {
+        tdDate.style.backgroundColor = "#ffe5e5";
+    } else if (day === 0 || day === 6) {
+        tdDate.style.backgroundColor = "#f3f3f3";
+    }
 
-        tr.appendChild(tdDate);
+    tr.appendChild(tdDate);
 
-        // =========================
-        // 👥 COLONNES EMPLOYÉS
-        // =========================
-        employes.forEach((_, colIndex) => {
+    // EMPLOYÉS
+    (planning.employes || []).forEach((_, colIndex) => {
 
-            const td = document.createElement("td");
-            td.contentEditable = true;
+        const td = document.createElement("td");
+        td.contentEditable = true;
 
-            const cellId = `${dateISO}_${colIndex}`;
-            td.dataset.id = cellId;
+        const cellId = `${dateISO}_${colIndex}`;
+        td.dataset.id = cellId;
 
-            const value =
-                planning.data?.[dateISO]?.cells?.[colIndex] || "";
+        const value =
+            planning.data?.[dateISO]?.cells?.[colIndex] || "";
 
-            td.innerText = value;
+        td.innerText = value;
 
-            // 🔵 focus → présence
-            td.addEventListener("focus", () => {
-                setEditing(cellId);
-            });
-
-            // 💾 blur → save Firestore
-            td.addEventListener("blur", () => {
-                updateCell(dateISO, colIndex, td.innerText);
-                clearEditing();
-            });
-
-            tr.appendChild(td);
+        td.addEventListener("focus", () => {
+            setEditing(cellId);
         });
 
-        tbody.appendChild(tr);
+        td.addEventListener("blur", () => {
+            updateCell(dateISO, colIndex, td.innerText);
+            clearEditing();
+        });
 
-        date.setDate(date.getDate() + 1);
-    }
+        tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+
+    date.setDate(date.getDate() + 1);
+}
 }
 
 

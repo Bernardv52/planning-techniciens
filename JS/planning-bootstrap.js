@@ -1,6 +1,6 @@
 import { listenPlanning } from "./planning-core.js";
 import { refreshPlanning } from "./planning-edit.js";
-import { initUI } from "./planning-ui.js";
+import { initUI,initSelects } from "./planning-ui.js";
 
 document.getElementById("anneeSelect").addEventListener("change", () => {
     renderPlanning();
@@ -11,6 +11,7 @@ document.getElementById("moisSelect").addEventListener("change", () => {
 });
 document.addEventListener("DOMContentLoaded", () => {
     initUI();
+    initSelects();
     const annee = new Date().getFullYear();
     const bloc = 1;
 

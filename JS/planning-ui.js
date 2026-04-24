@@ -52,9 +52,7 @@ export function activerDragAndDropColonnes() {
             // 3. push Firestore (UNE seule fois)
             // =========================
             await setDoc(ref, {
-                employes: planning.employes,
-                data: planning.data,
-                presence: planning.presence || {}
+                employes: nouveaux
             }, { merge: true });
 
             dragIndex = null;
@@ -121,6 +119,28 @@ export function rendreHeadersInteractifs() {
             }, { merge: true });
         };
     });
+}
+export function initSelects() {
+
+    const anneeSelect = document.getElementById("anneeSelect");
+    const moisSelect = document.getElementById("moisSelect");
+
+    const anneeActuelle = new Date().getFullYear();
+
+    // remplir années
+    for (let i = -2; i <= 2; i++) {
+        const y = anneeActuelle + i;
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+
+        if (i === 0) opt.selected = true;
+
+        anneeSelect.appendChild(opt);
+    }
+
+    // bloc par défaut
+    moisSelect.value = "1";
 }
 export function initUI() {
 

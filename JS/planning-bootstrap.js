@@ -18,7 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initUI();
     initSelects();
     let unsubscribe = null;
-
+    function getDocId() {
+        const annee = parseInt(document.getElementById("anneeSelect").value);
+        const bloc = parseInt(document.getElementById("moisSelect").value);
+        return `${annee}_bloc${bloc}`;
+    }
     function loadPlanning() {
 
         const docId = getDocId();
@@ -32,15 +36,27 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshPlanning();
         });
     }
+    // 🔥 IMPORTANT : récupérer les éléments APRES initSelects
+    const anneeSelect = document.getElementById("anneeSelect");
+    const moisSelect = document.getElementById("moisSelect");
+     // 🔥 debug
+    anneeSelect.addEventListener("change", () => {
+        console.log("📅 changement année");
+        loadPlanning();
+    });
 
-    // 🔹 premier chargement
-    loadPlanning();
+    moisSelect.addEventListener("change", () => {
+        console.log("📦 changement bloc");
+        loadPlanning();
+    });
 
-    // 🔹 changement année / bloc
+   /*  // 🔹 changement année / bloc
     document.getElementById("anneeSelect")
         .addEventListener("change", loadPlanning);
+        console.log("CHANGEMENT ANNEE");
 
     document.getElementById("moisSelect")
-        .addEventListener("change", loadPlanning);
-
+        .addEventListener("change", loadPlanning); */
+     // 🔹 premier chargement
+    loadPlanning();
 });

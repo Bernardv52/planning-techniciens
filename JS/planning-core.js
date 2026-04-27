@@ -18,10 +18,7 @@ export function listenPlanning(docId, onUpdate) {
         const data = snap.data();
 
         planning = {
-            employes: Array.isArray(data.employes) && data.employes.length > 0
-                ? data.employes
-                : planning.employes || [],
-
+            employes: data.employes || [],
             data: data.data || {},
             presence: data.presence || {}
         };

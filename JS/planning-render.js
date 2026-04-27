@@ -141,7 +141,10 @@ export function renderPlanning() {
 }
 export function renderPresence() {
 
-    document.querySelectorAll("#planning td").forEach(td => {
+    const cells = document.querySelectorAll("#planning td");
+
+    // reset UI
+    cells.forEach(td => {
         td.style.outline = "";
         td.title = "";
     });
@@ -154,10 +157,10 @@ export function renderPresence() {
 
         const cell = document.querySelector(`[data-id="${user.editing}"]`);
 
-        if (cell) {
-            cell.style.outline = `2px solid ${user.color || "blue"}`;
-            cell.title = user.name || "Utilisateur";
-        }
+        if (!cell) return;
+
+        cell.style.outline = `2px solid ${user.color || "blue"}`;
+        cell.title = user.name || "Utilisateur";
     });
 }
 

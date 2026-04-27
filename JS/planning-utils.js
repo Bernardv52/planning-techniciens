@@ -43,7 +43,7 @@ export function getJoursFeries(annee) {
 
     feries.push(lundiPaques, ascension);
 
-    return feries.map(d => d.toISOString().split("T")[0]);
+    return feries.map(d => formatDateKey(d));
 }
 export function getDateRange(bloc, year) {
 
@@ -65,5 +65,12 @@ export function getDateRange(bloc, year) {
     }
 
     return { start, end };
+}
+export function formatDateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
 }
 

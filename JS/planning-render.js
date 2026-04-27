@@ -1,6 +1,6 @@
 import { planning } from "./planning-core.js";
 import { updateCell } from "./planning-core.js";
-import { getJoursFeries } from "./planning-utils.js";
+import { getJoursFeries,formatDateKey } from "./planning-utils.js";
 
 export function renderPlanning() {
 
@@ -45,7 +45,7 @@ export function renderPlanning() {
             continue;
         }
 
-        const dateISO = date.toISOString().split("T")[0];
+        const dateISO = formatDateKey(date);
 
         const day = date.getDay();
 

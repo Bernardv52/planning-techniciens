@@ -35,10 +35,13 @@ export function listenPlanning(docId, onUpdate) {
 }
 
 export async function updateCell(date, ligne, col, cellData) {
+   console.log("SAVE CELL :", { date, ligne, col, cellData });
 
     const ref = doc(db, "planning", window.currentDoc);
 
+    const fieldPath = `data.${date}.${ligne}.${col}`;
+
     await updateDoc(ref, {
-        [`data.${date}.${ligne}.${col}`]: cellData
+        [fieldPath]: cellData
     });
 }

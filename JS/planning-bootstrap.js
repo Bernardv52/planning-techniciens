@@ -9,20 +9,38 @@ document.getElementById("anneeSelect").addEventListener("change", () => {
 document.getElementById("moisSelect").addEventListener("change", () => {
     renderPlanning();
 });
+function getDocId() {
+    const annee = parseInt(document.getElementById("anneeSelect").value);
+    const bloc = parseInt(document.getElementById("moisSelect").value);
+    return `${annee}_bloc${bloc}`;
+}
 document.addEventListener("DOMContentLoaded", () => {
     initUI();
     initSelects();
-    const annee = new Date().getFullYear();
-    const bloc = 1;
+    let unsubscribe = null;
 
-    const docId = `${annee}_bloc${bloc}`;
+    function loadPlanning() {
 
-    console.log("🚀 Initialisation planning :", docId);
+        const docId = getDocId();
 
-    listenPlanning(docId, () => {
-        console.log("🔄 Mise à jour planning reçue");
-        refreshPlanning();
+        console.log("🚀 Chargement planning :", docId);
 
-    });
+        if (unsubscribe) unsubscribe();
+
+        unsubscribe = listenPlanning(docId, () => {
+            console.log("🔄 Mise à jour planning reçue");
+            refreshPlanning();
+        });
+    }
+
+    // 🔹 premier chargement
+    loadPlanning();
+
+    // 🔹 changement année / bloc
+    document.getElementById("anneeSelect")
+        .addEventListener("change", loadPlanning);
+
+    document.getElementById("moisSelect")
+        .addEventListener("change", loadPlanning);
 
 });

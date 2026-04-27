@@ -32,7 +32,9 @@ export function listenPlanning(docId, onUpdate) {
         }
 
         planning = {
-            employes: Array.isArray(data.employes) ? data.employes : [],
+            employes: Array.isArray(data.employes)
+                ? data.employes
+                : planning.employes || [],
             data: data.data || {},
             presence: data.presence || {}
         };

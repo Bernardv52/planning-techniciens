@@ -8,33 +8,20 @@ export function listenPlanning(docId, onUpdate) {
 
     const ref = doc(db, "planning", docId);
 
-    const unsubscribe = onSnapshot(ref, async (snap) => {
+    const unsubscribe = onSnapshot(ref, (snap) => {
 
-        let data = {};
-
-        // 🔥 SI LE DOCUMENT N'EXISTE PAS → ON LE CRÉE
         if (!snap.exists()) {
-
-            console.log("⚠️ Aucun planning → initialisation...");
-
-            const defaultData = {
-                employes: [],
-                data: {},
-                presence: {}
-            };
-
-            await setDoc(ref, defaultData);
-
-            data = defaultData;
-
-        } else {
-            data = snap.data();
+            console.warn("⚠️ doc vide");
+            return;
         }
 
+        const data = snap.data();
+
         planning = {
-            employes: Array.isArray(data.employes)
+            employes: Array.isArray(data.employes) && data.employes.length > 0
                 ? data.employes
                 : planning.employes || [],
+
             data: data.data || {},
             presence: data.presence || {}
         };
@@ -44,8 +31,7 @@ export function listenPlanning(docId, onUpdate) {
         onUpdate(planning);
     });
 
-    return unsubscribe; // 🔥 ICI LA CORRECTION CRITIQUE
-    
+    return unsubscribe;   
 }
 
 export async function updateCell(date, ligne, col, cellData) {

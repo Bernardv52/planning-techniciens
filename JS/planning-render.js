@@ -7,6 +7,10 @@ export function renderPlanning() {
     const table = document.getElementById("planning");
     const tbody = table.querySelector("tbody");
     const headerRow = table.querySelector("thead tr");
+    if (!planning || !Array.isArray(planning.employes) || planning.employes.length === 0) {
+    console.warn("⛔ aucun employé → render annulé");
+    return;
+    }
 
     tbody.innerHTML = "";
     headerRow.innerHTML = "<th>DATE</th>";

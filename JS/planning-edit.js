@@ -5,13 +5,17 @@ import { activerDragAndDropColonnes, rendreHeadersInteractifs } from "./planning
  */
 export function refreshPlanning() {
 
-    // 1️⃣ Rendu DOM
-    renderPlanning(); // 1. construit le tableau
+    console.log("♻️ refreshPlanning");
 
-    // 2️⃣ UI (interactions)
-    rendreHeadersInteractifs();
-    activerDragAndDropColonnes();
+    renderPlanning(); // construit DOM
 
-    // 3️⃣ Présence (multi-user)
-    renderPresence(); // 2. applique les utilisateurs
+    // ⚠️ éviter double binding
+    setTimeout(() => {
+
+        rendreHeadersInteractifs();
+        activerDragAndDropColonnes();
+
+        renderPresence();
+
+    }, 0);
 }  

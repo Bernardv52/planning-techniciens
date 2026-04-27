@@ -8,7 +8,7 @@ export function listenPlanning(docId, onUpdate) {
 
     const ref = doc(db, "planning", docId);
 
-    onSnapshot(ref, async (snap) => {
+    const unsubscribe = onSnapshot(ref, async (snap) => {
 
         let data = {};
 
@@ -41,6 +41,9 @@ export function listenPlanning(docId, onUpdate) {
 
         onUpdate(planning);
     });
+
+    return unsubscribe; // 🔥 ICI LA CORRECTION CRITIQUE
+    
 }
 
 export async function updateCell(date, ligne, col, cellData) {

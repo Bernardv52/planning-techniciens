@@ -60,3 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
      // 🔹 premier chargement
     loadPlanning();
 });
+console.log("BOOTSTRAP CHARGÉ");
+
+document.getElementById("anneeSelect").addEventListener("change", () => {
+    console.log("🔥 ANNEE CHANGE");
+});
+
+document.getElementById("moisSelect").addEventListener("change", () => {
+    console.log("🔥 MOIS CHANGE");
+});

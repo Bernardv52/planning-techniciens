@@ -75,30 +75,30 @@ export function renderPlanning() {
 
         tr1.appendChild(tdDate);
 
-        employes.forEach((_, colIndex) => {
+        employes.forEach((emp, colIndex) => {
 
-            const td = document.createElement("td");
-            td.contentEditable = true;
-            td.style.backgroundColor = couleur;
+        const td = document.createElement("td");
+        td.contentEditable = true;
+        td.style.backgroundColor = couleur;
 
-            const data = planning.data?.[dateISO]?.[0]?.[colIndex];
+        const data = planning.data?.[dateISO]?.[0]?.[emp];
 
-            if (data) {
-                td.innerHTML = data.html || "";
-                td.style.color = data.color || "";
-                td.style.fontWeight = data.weight || "";
-            }
+        if (data) {
+            td.innerHTML = data.html || "";
+            td.style.color = data.color || "";
+            td.style.fontWeight = data.weight || "";
+        }
 
-            td.addEventListener("blur", () => {
-                updateCell(dateISO, 0, colIndex, {
-                    html: td.innerHTML,
-                    bg: td.style.backgroundColor,
-                    color: td.style.color,
-                    weight: td.style.fontWeight
-                });
+        td.addEventListener("blur", () => {
+            updateCell(dateISO, 0, colIndex, {
+                html: td.innerHTML,
+                bg: td.style.backgroundColor,
+                color: td.style.color,
+                weight: td.style.fontWeight
             });
+        });
 
-            tr1.appendChild(td);
+        tr1.appendChild(td);
         });
 
         tbody.appendChild(tr1);

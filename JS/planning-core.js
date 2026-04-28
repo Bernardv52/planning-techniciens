@@ -38,8 +38,9 @@ export async function updateCell(date, ligne, col, cellData) {
 
     const ref = doc(db, "planning", window.currentDoc);
     const bloc = document.getElementById("moisSelect").value;
+    const emp = planning.employes[col];
 
     await updateDoc(ref, {
-        [`blocs.bloc${bloc}.data.${date}.${ligne}.${col}`]: cellData
+        [`blocs.bloc${bloc}.data.${date}.${ligne}.${emp}`]: cellData
     });
 }

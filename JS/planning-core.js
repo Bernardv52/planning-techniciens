@@ -17,9 +17,11 @@ export function listenPlanning(docId, onUpdate) {
 
         const data = snap.data();
 
+        const bloc = parseInt(document.getElementById("moisSelect").value);
+
         planning = {
             employes: data.employes || [],
-            data: data.data || {},
+            data: data.blocs?.[`bloc${bloc}`]?.data || {},
             presence: data.presence || {}
         };
 
@@ -35,10 +37,9 @@ export async function updateCell(date, ligne, col, cellData) {
    console.log("SAVE CELL :", { date, ligne, col, cellData });
 
     const ref = doc(db, "planning", window.currentDoc);
-
-    const fieldPath = `data.${date}.${ligne}.${col}`;
+    const bloc = document.getElementById("moisSelect").value;
 
     await updateDoc(ref, {
-        [fieldPath]: cellData
+        [`blocs.bloc${bloc}.data.${date}.${ligne}.${col}`]: cellData
     });
 }

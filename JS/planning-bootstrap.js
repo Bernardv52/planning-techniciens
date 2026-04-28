@@ -3,7 +3,8 @@ import { refreshPlanning } from "./planning-edit.js";
 import { initUI,initSelects } from "./planning-ui.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from "./APIS/firebase.js";
-
+/* import { migratePlanning } from "./migration.js"; // seulement si besoin
+window.migratePlanning = migratePlanning; */
 document.addEventListener("DOMContentLoaded", () => {
 
     console.log("BOOTSTRAP CHARGÉ");
@@ -16,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function getDocId() {
         const annee = parseInt(document.getElementById("anneeSelect").value);
         const bloc = parseInt(document.getElementById("moisSelect").value);
-        return `${annee}_bloc${bloc}`;
+        return `${annee}`;
     }
 
     async function loadPlanning() {

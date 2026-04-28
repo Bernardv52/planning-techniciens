@@ -90,7 +90,7 @@ export function renderPlanning() {
         }
 
         td.addEventListener("blur", () => {
-            updateCell(dateISO, 0, colIndex, {
+            updateCell(dateISO, 0, emp, {
                 html: td.innerHTML,
                 bg: td.style.backgroundColor,
                 color: td.style.color,
@@ -108,13 +108,13 @@ export function renderPlanning() {
         // =========================
         const tr2 = document.createElement("tr");
 
-        employes.forEach((_, colIndex) => {
+        employes.forEach((emp, colIndex) => {
 
             const td = document.createElement("td");
             td.contentEditable = true;
             td.style.backgroundColor = couleur;
 
-            const data = planning.data?.[dateISO]?.[1]?.[colIndex];
+            const data = planning.data?.[dateISO]?.[1]?.[emp];
 
             if (data) {
                 td.innerHTML = data.html || "";
@@ -123,7 +123,7 @@ export function renderPlanning() {
             }
 
             td.addEventListener("blur", () => {
-                updateCell(dateISO, 1, colIndex, {
+                updateCell(dateISO, 1, emp, {
                     html: td.innerHTML,
                     bg: td.style.backgroundColor,
                     color: td.style.color,

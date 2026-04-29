@@ -14,12 +14,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let unsubscribe = null;
     let loading = false;
-    function getDocId() {
-        const annee = parseInt(document.getElementById("anneeSelect").value);
-        const bloc = parseInt(document.getElementById("moisSelect").value);
-        return `${annee}`;
+    // =========================
+    // 🔥 RESTORE STATE (AVANT LOAD)
+    // =========================
+    const savedAnnee = localStorage.getItem("annee");
+    const savedBloc = localStorage.getItem("bloc");
+
+    if (savedAnnee) {
+        document.getElementById("anneeSelect").value = savedAnnee;
     }
 
+    if (savedBloc) {
+        document.getElementById("moisSelect").value = savedBloc;
+    }
+    // =========================
+    // ID DOC
+    // =========================
+    function getDocId() {
+        return document.getElementById("anneeSelect").value;
+    }
+    
     async function loadPlanning() {
         if (loading) return;
         loading = true;
@@ -37,9 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         loading = false;
     }
-
-    document.getElementById("anneeSelect").addEventListener("change", loadPlanning);
-    document.getElementById("moisSelect").addEventListener("change", loadPlanning);
+    // =========================
+    // EVENTS + SAVE STATE
+    // =========================
+   document.getElementById("anneeSelect").addEventListener("change", (e) => {
+        localStorage.setItem("annee", e.target.value);
+        loadPlanning();
+    });
+    document.getElementById("moisSelect").addEventListener("change", (e) => {
+        localStorage.setItem("bloc", e.target.value);
+        loadPlanning();
+    });
 
     // 🔹 premier chargement
     loadPlanning();
@@ -54,8 +76,12 @@ async function ensureDocExists(docId) {
 
         await setDoc(ref, {
             employes: [],
-            data: {},
-            presence: {}
+            presence: {},
+            blocs: {
+                bloc1: { data: {} },
+                bloc2: { data: {} },
+                bloc3: { data: {} }
+            }
         });
     }
 }

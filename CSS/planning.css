@@ -19,6 +19,17 @@ table{
 .planning-container {
     width: 100%;
 }
+ /* ajout */
+
+#planning tbody tr td {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.loading {
+    opacity: 0.5;
+}
+/* Fin ajout */
 .top-bar {
     position: sticky;
     top: 0;

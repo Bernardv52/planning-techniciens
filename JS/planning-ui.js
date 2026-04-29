@@ -139,8 +139,18 @@ export function initSelects() {
         anneeSelect.appendChild(opt);
     }
 
-    // bloc par défaut
-    moisSelect.value = "1";
+   
+
+    // =========================
+    // DEFAULT SAFE (IMPORTANT)
+    // =========================
+    if (!localStorage.getItem("annee")) {
+        anneeSelect.value = anneeActuelle;
+    }
+
+    if (!localStorage.getItem("bloc")) {
+        moisSelect.value = "1";
+    }
 }
 export function initUI() {
 

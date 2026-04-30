@@ -1,4 +1,4 @@
-async function sauvegarderPlanning() {
+/* async function sauvegarderPlanning() {
     const annee = parseInt(anneeSelect.value);
     const bloc = parseInt(blocSelect.value);
 
@@ -47,4 +47,4 @@ async function chargerPlanning() {
     } catch (err) {
         console.error("Erreur chargement serveur :", err);
     }
-}
+} */

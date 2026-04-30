@@ -31,7 +31,13 @@
         <span class="span">Copie/colle cellules
         <button id="copyBtn">Copier</button>
         <button id="pasteBtn">Coller</button></span>
-        
+        <select id="exportFormat">
+            <option value="pdf">PDF</option>
+            <option value="xlsx">Excel (.xlsx)</option>
+            <option value="csv">CSV</option>
+            <option value="docx">Word (.docx)</option>
+        </select>
+        <button id="exportBtn">Exporter</button>
     </div>
     <div class="top-bar">
         <label>Choisir l'année :</label>
@@ -70,17 +76,10 @@
         </div>
   </div>
 </div>
-<select id="exportFormat">
-  <option value="pdf">PDF</option>
-  <option value="xlsx">Excel (.xlsx)</option>
-  <option value="csv">CSV</option>
-  <option value="docx">Word (.docx)</option>
-</select>
-<button id="exportBtn">Exporter</button>
 <script type="module" src="./JS/APIS/loginFirebase.js"></script>
 <script type="module" src="./JS/APIS/firebase.js"></script>
 <script type="module" src="./JS/planning-bootstrap.js"></script>
-<script src="./JS/barreTools.js" defer></script>
+<script type="module" src="./JS/barreTools.js" defer></script>
 <script src="./JS/exportPlanning.js" defer></script>
  <script src="./JS/LIBS/xlsx.full.min.js"></script>
 <script src="./JS/LIBS/jspdf.umd.min.js"></script>

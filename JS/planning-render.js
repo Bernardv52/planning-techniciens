@@ -1,43 +1,55 @@
-import { planning,updateCell,loading } from "./planning-core.js";
-import { getJoursFeries,formatDateKey } from "./planning-utils.js";
+import { planning, updateCell, loading } from "./planning-core.js";
+import { getJoursFeries, formatDateKey } from "./planning-utils.js";
 
+// =========================
+// STATE UI SAFE (important)
+// =========================
+let renderLock = false;
+
+// =========================
+// MAIN RENDER
+// =========================
 export function renderPlanning() {
-   /*  if (!ready) {
-        console.log("⏳ planning pas encore prêt");
-        return;
-             } */
+
+    if (renderLock) return;
+    renderLock = true;
+
     const table = document.getElementById("planning");
     const tbody = table.querySelector("tbody");
     const headerRow = table.querySelector("thead tr");
-    if (!planning) return;
 
-    tbody.innerHTML = "";
-    headerRow.innerHTML = "<th>DATE</th>";
-
-    const employes = planning.employes || [];
-    if (!planning.employes?.length) return;
-    // Ajout
-    if (loading) {
-        document.querySelector("#planning tbody").innerHTML =
-            `<tr><td>Chargement du planning...</td></tr>`;
+    if (!planning || !planning.employes) {
+        renderLock = false;
         return;
     }
 
-    if (!planning.employes?.length) return;
-    // Fin ajout
+    const employes = planning.employes;
+
+    // =========================
+    // RESET DOM
+    // =========================
+    tbody.innerHTML = "";
+    headerRow.innerHTML = "<th>DATE</th>";
+
+    // =========================
+    // HEADERS
+    // =========================
     employes.forEach(emp => {
         const th = document.createElement("th");
         th.textContent = emp;
         headerRow.appendChild(th);
     });
 
-    const annee = parseInt(document.getElementById("anneeSelect")?.value)
+    const annee =
+        parseInt(document.getElementById("anneeSelect")?.value)
         || new Date().getFullYear();
 
-    const bloc = parseInt(document.getElementById("moisSelect").value) || 1;
+    const bloc =
+        parseInt(document.getElementById("moisSelect")?.value)
+        || 1;
 
-    // 🔥 SOURCE UNIQUE DE DONNÉES (IMPORTANT)
-    const blocData = planning.blocs?.[`bloc${bloc}`]?.data || {};
+    const blocData =
+        planning.blocs?.[`bloc${bloc}`]?.data || {};
 
     const feries = getJoursFeries(annee);
 
@@ -46,11 +58,13 @@ export function renderPlanning() {
 
     let alternance = false;
 
+    // =========================
+    // LOOP DATES
+    // =========================
     while (date <= dateFin) {
 
         const mois = date.getMonth();
 
-        // filtre bloc
         if (
             (bloc === 1 && mois > 3) ||
             (bloc === 2 && (mois < 4 || mois > 7)) ||
@@ -75,14 +89,15 @@ export function renderPlanning() {
         }
 
         // =========================
-        // LIGNE 1
+        // ROW 1
         // =========================
         const tr1 = document.createElement("tr");
+
         const tdDate = document.createElement("td");
         tdDate.rowSpan = 2;
         tdDate.classList.add("date-cell");
-        tdDate.textContent = formatDate(dateISO);
         tdDate.dataset.date = dateISO;
+        tdDate.textContent = formatDate(dateISO);
         tdDate.style.backgroundColor = couleur;
 
         tr1.appendChild(tdDate);
@@ -91,19 +106,24 @@ export function renderPlanning() {
 
             const td = document.createElement("td");
             td.contentEditable = true;
+
+            td.dataset.date = dateISO;
+            td.dataset.emp = emp;
+            td.dataset.ligne = 0;
+
             td.style.backgroundColor = couleur;
 
-            const ligne = 0;
-            const data = blocData?.[dateISO]?.[ligne]?.[emp] || null;
+            const data = blocData?.[dateISO]?.[0]?.[emp];
 
             if (data) {
                 td.innerHTML = data.html || "";
+                td.style.backgroundColor = data.bg || couleur;
                 td.style.color = data.color || "";
                 td.style.fontWeight = data.weight || "";
             }
 
             td.addEventListener("blur", () => {
-                updateCell(dateISO, ligne, emp, {
+                updateCell(dateISO, 0, emp, {
                     html: td.innerHTML,
                     bg: td.style.backgroundColor,
                     color: td.style.color,
@@ -117,7 +137,7 @@ export function renderPlanning() {
         tbody.appendChild(tr1);
 
         // =========================
-        // LIGNE 2
+        // ROW 2
         // =========================
         const tr2 = document.createElement("tr");
 
@@ -125,20 +145,24 @@ export function renderPlanning() {
 
             const td = document.createElement("td");
             td.contentEditable = true;
+
+            td.dataset.date = dateISO;
+            td.dataset.emp = emp;
+            td.dataset.ligne = 1;
+
             td.style.backgroundColor = couleur;
 
-            const ligne = 1;
-            const data = blocData?.[dateISO]?.[ligne]?.[emp] || null;
+            const data = blocData?.[dateISO]?.[1]?.[emp];
 
             if (data) {
                 td.innerHTML = data.html || "";
+                td.style.backgroundColor = data.bg || couleur;
                 td.style.color = data.color || "";
                 td.style.fontWeight = data.weight || "";
             }
 
-
             td.addEventListener("blur", () => {
-                updateCell(dateISO, ligne, emp, {
+                updateCell(dateISO, 1, emp, {
                     html: td.innerHTML,
                     bg: td.style.backgroundColor,
                     color: td.style.color,
@@ -152,9 +176,14 @@ export function renderPlanning() {
         tbody.appendChild(tr2);
 
         date.setDate(date.getDate() + 1);
-        
     }
+
+    renderLock = false;
 }
+/* export function renderPresence() {
+    // si tu n’as pas encore besoin ici :
+    console.log("renderPresence placeholder");
+} */
 export function renderPresence() {
 
     const cells = document.querySelectorAll("#planning td");

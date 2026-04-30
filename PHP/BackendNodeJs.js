@@ -1,5 +1,5 @@
 // server.js
-const express = require("express");
+/* const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -28,4 +28,4 @@ app.post("/planning.json", (req, res) => {
     res.send({ status: "ok" });
 });
 
-app.listen(PORT, () => console.log(`Serveur lancé sur http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Serveur lancé sur http://localhost:${PORT}`)); */

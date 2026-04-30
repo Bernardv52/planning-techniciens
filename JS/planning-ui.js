@@ -1,6 +1,6 @@
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from "./APIS/firebase.js";
-import { planning } from "./planning-core.js";
+import { currentDoc, planning } from "./planning-core.js";
 
 export function activerDragAndDropColonnes() {
 
@@ -82,7 +82,7 @@ export function rendreHeadersInteractifs() {
 
             planning.employes[index - 1] = nouveauNom.toUpperCase();
 
-            const ref = doc(db, "planning", window.currentDoc);
+            const ref = doc(db, "planning", currentDoc);
 
             await setDoc(ref, {
                 employes: planning.employes,
@@ -110,7 +110,7 @@ export function rendreHeadersInteractifs() {
                 cells.splice(index - 1, 1);
             }
 
-            const ref = doc(db, "planning", window.currentDoc);
+            const ref = doc(db, "planning", currentDoc);
 
             await setDoc(ref, {
                 employes: planning.employes,
@@ -161,14 +161,18 @@ export function initUI() {
             const nom = prompt("Nom du technicien ?");
             if (!nom) return;
 
-            const ref = doc(db, "planning", window.currentDoc);
+            const ref = doc(db, "planning", currentDoc);
 
             const nouveaux = [...(planning.employes || []), nom.toUpperCase()];
 
              await setDoc(ref, {
                 employes: nouveaux,
-                data: planning.data || {},
-                presence: planning.presence || {}
+               /*  blocs: planning.blocs || {
+                    bloc1: { data: {} },
+                    bloc2: { data: {} },
+                    bloc3: { data: {} }
+                },
+                presence: planning.presence || {} */
             }, { merge: true });
 
             console.log("✅ employés ajoutés :", nouveaux);
@@ -185,15 +189,17 @@ export function initUI() {
             const nom = prompt("Nom du technicien à supprimer ?");
             if (!nom) return;
 
-            const ref = doc(db, "planning", window.currentDoc);
+            const ref = doc(db, "planning", currentDoc);
 
             const nouveaux = planning.employes.filter(e => e !== nom.toUpperCase());
 
             await setDoc(ref, {
                 employes: nouveaux,
-                data: planning.data || {},
-                presence: planning.presence || {}
+                /* blocs: planning.blocs,
+                presence: planning.presence || {} */
             }, { merge: true });
+
+            console.log("🗑 employé supprimé :", nom);
         });
     }
 
@@ -206,25 +212,4 @@ export function initUI() {
         });
     }
 
-    // 🎨 COULEURS
-    document.querySelectorAll(".color-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.execCommand("backColor", false, btn.dataset.color);
-        });
-    });
-
-    // 🅱️ GRAS
-    const boldBtn = document.getElementById("boldBtn");
-    if (boldBtn) {
-        boldBtn.addEventListener("click", () => {
-            document.execCommand("bold");
-        });
-    }
-
-    // 📋 COPY / PASTE (placeholder)
-    const copyBtn = document.getElementById("copyBtn");
-    const pasteBtn = document.getElementById("pasteBtn");
-
-    if (copyBtn) copyBtn.addEventListener("click", () => console.log("Copie"));
-    if (pasteBtn) pasteBtn.addEventListener("click", () => console.log("Coller"));
 }

@@ -15,6 +15,11 @@ table{
     width: 100%;
     border-collapse: collapse;
 }
+#logoPlanning{
+    margin: 0,30,10,30;
+    width: 20%;
+    height: 3%;
+}
 
 .planning-container {
     width: 100%;
@@ -57,9 +62,10 @@ display: inline-block;
 ========================= */
 
 #planning {
+    table-layout: fixed; 
     border-collapse: collapse;
     width: 100%;
-    table-layout: fixed; /* IMPORTANT : colonnes stables */
+     
 }
 
 /* =========================
@@ -70,14 +76,17 @@ display: inline-block;
     position: sticky;
     top: 0;
     background: var(--header);
-    z-index: 10;
-    border: 2px solid black;
-    padding: 8px;
-    text-align: center;
-    font-weight: bold;
+    z-index: 50;
+    border: 1px solid black;
+    border-bottom: 1px solid #000;
+    padding: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
 
-    white-space: normal;
-    word-break: break-word;
+    height: 50px;
+    box-shadow: inset 0 -2px 0 #000;
+
 }
 
 /* Hover header */
@@ -96,14 +105,43 @@ display: inline-block;
    CELLULES
 ========================= */
 
-#planning td {
+#planning th {
+    min-height: 72px;
+    height: 32px;
+    padding: 4px;
+    vertical-align: middle;
+}
+/* #planning td {
+
+    height: 32px;
+    min-height: 32px;
     border: 1px solid black;
-    padding: 6px 4px;
+    padding: 6px 4px; 
     text-align: center;
     vertical-align: middle;
-
     white-space: normal;
     word-break: break-word;
+    
+} */
+
+#planning td {
+    border: 1px solid black;
+    padding: 6px 4px; 
+    text-align: center;
+    vertical-align: middle;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+     
+    
+}
+#planning td,
+#planning th {
+    background-clip: padding-box;
+    line-height: normal;
+}
+#planning tr {
+    height: 32px;
 }
 
 /* =========================
@@ -112,9 +150,9 @@ display: inline-block;
 
 #planning th:first-child,
 #planning td:first-child {
-    width: 222px;          /* un peu plus large mais pas énorme */
-    min-width: 222px;
-    max-width: 222px;
+    width: 120px;         
+    /* min-width: 120px;
+    max-width: 120px; */
 }
 
 .date-cell {

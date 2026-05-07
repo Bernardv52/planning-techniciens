@@ -1,5 +1,7 @@
-import { planning, updateCell, loading } from "./planning-core.js";
+import { planning, updateCell } from "./planning-core.js";
 import { getJoursFeries, formatDateKey } from "./planning-utils.js";
+import { activerDragAndDropColonnes, rendreHeadersInteractifs } from "./planning-ui.js";
+import { autoResizeHeaders } from "./planning-edit.js";
 
 // =========================
 // STATE UI SAFE (important)
@@ -10,7 +12,11 @@ let renderLock = false;
 // MAIN RENDER
 // =========================
 export function renderPlanning() {
-
+    //if (window.isDraggingColumn) return;
+    if (!planning.employes?.length || !planning.blocs) return;
+    console.log("PLANNING REÇU:", planning);
+    console.log("EMPLOYES:", planning.employes);
+    console.log("BLOCS:", planning.blocs);
     if (renderLock) return;
     renderLock = true;
 
@@ -37,6 +43,10 @@ export function renderPlanning() {
     employes.forEach(emp => {
         const th = document.createElement("th");
         th.textContent = emp;
+
+        // 🔥 IMPORTANT : identifiant stable
+        th.dataset.emp = emp;
+
         headerRow.appendChild(th);
     });
 
@@ -57,7 +67,10 @@ export function renderPlanning() {
     const dateFin = new Date(annee, 11, 31);
 
     let alternance = false;
-
+    //code ajouté
+    console.log("BLOC SELECTED:", bloc);
+    console.log("START DATE LOOP");
+    //fin code ajouté
     // =========================
     // LOOP DATES
     // =========================
@@ -126,6 +139,7 @@ export function renderPlanning() {
                 updateCell(dateISO, 0, emp, {
                     html: td.innerHTML,
                     bg: td.style.backgroundColor,
+                    //bg: window.getComputedStyle(td).backgroundColor,
                     color: td.style.color,
                     weight: td.style.fontWeight
                 });
@@ -165,6 +179,7 @@ export function renderPlanning() {
                 updateCell(dateISO, 1, emp, {
                     html: td.innerHTML,
                     bg: td.style.backgroundColor,
+                    //bg: window.getComputedStyle(td).backgroundColor,
                     color: td.style.color,
                     weight: td.style.fontWeight
                 });
@@ -179,11 +194,13 @@ export function renderPlanning() {
     }
 
     renderLock = false;
+    setTimeout(() => {
+        activerDragAndDropColonnes();
+        rendreHeadersInteractifs();
+        autoResizeHeaders();
+    }, 0);
 }
-/* export function renderPresence() {
-    // si tu n’as pas encore besoin ici :
-    console.log("renderPresence placeholder");
-} */
+
 export function renderPresence() {
 
     const cells = document.querySelectorAll("#planning td");

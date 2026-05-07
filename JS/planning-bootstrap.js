@@ -47,9 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (unsubscribe) unsubscribe();
 
-        unsubscribe = listenPlanning(docId, () => {
-            refreshPlanning();
-        });
+        unsubscribe = listenPlanning(docId, refreshPlanning);
         loading = false;
     }
     // =========================

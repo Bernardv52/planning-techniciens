@@ -128,8 +128,8 @@ async function exportPDF() {
         // ===== Largeurs dynamiques =====
         const table = document.getElementById("planning");
         const nbColonnes = table.querySelectorAll("thead th").length;
-        const pageWidth = doc.internal.pageSize.getWidth() - 20; // marge gauche + droite
-        const dateColWidth = 33;
+        const pageWidth = doc.internal.pageSize.getWidth() - 40; // marge gauche + droite
+        const dateColWidth = 12;
         const remainingWidth = pageWidth - dateColWidth;
         const dataColWidth = remainingWidth / (nbColonnes - 1);
 
@@ -197,8 +197,8 @@ async function exportPDF() {
         // Même export sans logo
         const table = document.getElementById("planning");
         const nbColonnes = table.querySelectorAll("thead th").length;
-        const pageWidth = doc.internal.pageSize.getWidth() - 20;
-        const dateColWidth = 33;
+        const pageWidth = doc.internal.pageSize.getWidth() - 40;
+        const dateColWidth = 12;
         const remainingWidth = pageWidth - dateColWidth;
         const dataColWidth = (remainingWidth * 0.95) / (nbColonnes - 1);
 
@@ -299,8 +299,9 @@ async function exportDOCX() {
     saveAs(blob, "planning.docx");
 
 }
-document.getElementById("exportBtn").addEventListener("click", function(){
-
+document.getElementById("exportBtn").addEventListener("click", async function(){
+    // 🔥 laisse le temps au render de finir
+    await new Promise(r => setTimeout(r, 50));
     const format = document.getElementById("exportFormat").value;
 
     if(format === "csv") exportCSV();

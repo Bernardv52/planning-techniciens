@@ -1,11 +1,13 @@
 import { doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from "./APIS/firebase.js";
 export let planning = {};
-export let isUpdating = false;
-export let loading = true;
-
+let isUpdating = false;
+let loading = true;
 export let currentDoc = null;
-
+export let ignoreSnapshot = false;
+export function setIgnoreSnapshot(value) {
+    ignoreSnapshot = value;
+}
 export function listenPlanning(docId, onUpdate) {
 
     currentDoc = docId;
@@ -18,30 +20,29 @@ export function listenPlanning(docId, onUpdate) {
 
         if (!snap.exists()) return;
         if (isUpdating) return;
-
+        if (ignoreSnapshot) return;
         const data = snap.data();
-
-       
-        if (!data) return;
+        
 
         planning = {
-            employes: Array.isArray(data.employes) ? data.employes : [],
-            blocs: {
-                bloc1: data.blocs?.bloc1 ?? { data: {} },
-                bloc2: data.blocs?.bloc2 ?? { data: {} },
-                bloc3: data.blocs?.bloc3 ?? { data: {} }
-            },
-            presence: data.presence ?? {}
+        employes: data.employes || [],
+        blocs: data.blocs || {},
+        presence: data.presence || {}
         };
 
         loading = false;
+
+        // 🔥 SEUL POINT DE RENDER AUTOMATIQUE
+        //onUpdate(planning);
+
+
+        loading = false;
         console.log("🔥 SNAPSHOT DATA:", data);
-        console.log("👥 EMPLOYES RAW:", data.employes);
         console.log("📦 PLANNING FINAL:", planning);
         onUpdate(planning);
     });
 
-    return unsubscribe;
+    //return unsubscribe;
 }
 
 export async function updateCell(date, ligne, emp, cellData) {

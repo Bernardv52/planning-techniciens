@@ -2,7 +2,7 @@ import { listenPlanning } from "./planning-core.js";
 import { refreshPlanning } from "./planning-edit.js";
 import { initUI,initSelects } from "./planning-ui.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {getAuth,onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { db } from "./APIS/firebase.js";
 /* import { migratePlanning } from "./migration.js"; // seulement si besoin
 window.migratePlanning = migratePlanning; */
@@ -51,22 +51,84 @@ document.addEventListener("DOMContentLoaded", () => {
         unsubscribe = listenPlanning(docId, refreshPlanning);
         loading = false;
     }
+    async function ensureUserDoc(user) {
+
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+
+        await setDoc(ref, {
+            email: user.email,
+            role: "user"
+        });
+
+        console.log("👤 Utilisateur créé");
+    }
+}
+
+async function getUserRole(uid) {
+
+    const ref = doc(db, "users", uid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) return "user";
+
+    return snap.data().role;
+}
      // =========================
     // AUTH
     // =========================
      const auth = getAuth();
 
     onAuthStateChanged(auth, async (user) => {
+        console.log("AUTH STATE CHANGED :", user?.email || "null");
 
         if (user) {
 
+            console.log("➡ USER CONNECTÉ");
+
+            // =========================
+            // 👤 CREATE USER DOC
+            // =========================
+            await ensureUserDoc(user);
+
+            // =========================
+            // 🔐 GET ROLE
+            // =========================
+            const role = await getUserRole(user.uid);
+
+            console.log("ROLE :", role);
+
+            const isAdmin = role === "admin";
+
+            // =========================
+            // UI AUTH
+            // =========================
             document.getElementById("loginPage").style.display = "none";
 
             document.getElementById("appPage").style.display = "block";
 
+            // =========================
+            // 🔒 DROITS
+            // =========================
+            window.IS_ADMIN = isAdmin;
+
+            // boutons admin seulement
+            document.getElementById("addEmploye").style.display =
+                isAdmin ? "inline-block" : "none";
+
+            document.getElementById("removeEmploye").style.display =
+                isAdmin ? "inline-block" : "none";
+
+            // export interdit aux users
+            document.getElementById("exportBtn").disabled = !isAdmin;
+
             await loadPlanning();
 
         } else {
+
+            console.log("➡ USER DECONNECTÉ");
 
             document.getElementById("loginPage").style.display = "flex";
 
@@ -76,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 unsubscribe();
             }
         }
+       
     });
     // =========================
     // EVENTS + SAVE STATE
@@ -89,8 +152,17 @@ document.addEventListener("DOMContentLoaded", () => {
         loadPlanning();
     });
 
-    // 🔹 premier chargement
-   //loadPlanning();
+    // =========================
+    // LOGOUT
+    // =========================
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+            await signOut(auth);
+            console.log("Déconnecté");
+        });
+    }
 });
 async function ensureDocExists(docId) {
 
@@ -111,3 +183,4 @@ async function ensureDocExists(docId) {
         });
     }
 }
+

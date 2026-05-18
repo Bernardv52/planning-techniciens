@@ -6,15 +6,20 @@
 <link rel="stylesheet" href="./CSS/planning.css">
 </head>
 <body>
-<div id="loginBox">
-    <h3>Connexion</h3>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Mot de passe">
-    <button id="loginBtn">Se connecter</button>
-</div>
-<div>
+    <div>
      <img id="logoPlanning" src="./Logo/Logo.png"> 
+    </div>
+    <div id="loginPage">
+        <div id="loginBox">
+            <h3>Connexion</h3>
+            <input type="email" id="email">
+            <input type="password" id="password">
+            <button id="loginBtn">Se connecter</button>
+        </div>
 </div>
+    <div id="appPage" style="display:none;">
+
+
 <div class="planning-container">
     <h2>Planning</h2>
 </div>
@@ -76,9 +81,11 @@
         </div>
   </div>
 </div>
+</div>
 <script type="module" src="./JS/APIS/loginFirebase.js"></script>
 <script type="module" src="./JS/APIS/firebase.js"></script>
 <script type="module" src="./JS/planning-bootstrap.js"></script>
+<script type="module" src="./JS/Login/login.js"></script>
 <script type="module" src="./JS/barreTools.js" defer></script>
 <script src="./JS/exportPlanning.js" defer></script>
  <script src="./JS/LIBS/xlsx.full.min.js"></script>

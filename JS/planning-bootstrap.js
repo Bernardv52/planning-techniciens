@@ -2,6 +2,7 @@ import { listenPlanning } from "./planning-core.js";
 import { refreshPlanning } from "./planning-edit.js";
 import { initUI,initSelects } from "./planning-ui.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { db } from "./APIS/firebase.js";
 /* import { migratePlanning } from "./migration.js"; // seulement si besoin
 window.migratePlanning = migratePlanning; */
@@ -50,6 +51,32 @@ document.addEventListener("DOMContentLoaded", () => {
         unsubscribe = listenPlanning(docId, refreshPlanning);
         loading = false;
     }
+     // =========================
+    // AUTH
+    // =========================
+     const auth = getAuth();
+
+    onAuthStateChanged(auth, async (user) => {
+
+        if (user) {
+
+            document.getElementById("loginPage").style.display = "none";
+
+            document.getElementById("appPage").style.display = "block";
+
+            await loadPlanning();
+
+        } else {
+
+            document.getElementById("loginPage").style.display = "flex";
+
+            document.getElementById("appPage").style.display = "none";
+
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        }
+    });
     // =========================
     // EVENTS + SAVE STATE
     // =========================
@@ -63,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 🔹 premier chargement
-    loadPlanning();
+   //loadPlanning();
 });
 async function ensureDocExists(docId) {
 

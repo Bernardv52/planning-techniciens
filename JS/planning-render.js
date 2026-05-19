@@ -118,7 +118,7 @@ export function renderPlanning() {
         employes.forEach(emp => {
 
             const td = document.createElement("td");
-            td.contentEditable = true;
+            td.contentEditable = window.IS_ADMIN;
 
             td.dataset.date = dateISO;
             td.dataset.emp = emp;
@@ -158,7 +158,7 @@ export function renderPlanning() {
         employes.forEach(emp => {
 
             const td = document.createElement("td");
-            td.contentEditable = true;
+            td.contentEditable = window.IS_ADMIN;
 
             td.dataset.date = dateISO;
             td.dataset.emp = emp;

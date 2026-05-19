@@ -5,6 +5,7 @@ import { renderPlanning } from "./planning-render.js";
 //let isDraggingColumn = false;
 let dragIndex = null;
 export function activerDragAndDropColonnes() {
+    if (!window.IS_ADMIN) return;
     const table = document.getElementById("planning");
 
     if (!table) return;
@@ -82,80 +83,9 @@ export function activerDragAndDropColonnes() {
         };
     });
 
-    /* const table = document.getElementById("planning");
-    const headers = table.querySelectorAll("thead th");
-
-    let dragIndex = null;
-
-    headers.forEach((th, index) => {
-
-        if (index === 0) return;
-
-        th.draggable = true;
-
-        th.ondragstart = () => {
-           // isDraggingColumn = true;
-            dragIndex = index - 1;
-            console.log("DRAG START OK; index =", dragIndex);
-        };
-
-        th.ondragover = (e) => {
-            e.preventDefault();
-        };
-
-        th.ondrop = async (e) => {
-
-            e.preventDefault();
-
-            const targetIndex = index - 1;
-
-            if (dragIndex === null || dragIndex === targetIndex) return;
-
-            const ref = doc(db, "planning", currentDoc);
-
-            const newEmployes = [...planning.employes];
-
-            // swap employés
-            [newEmployes[dragIndex], newEmployes[targetIndex]] =
-            [newEmployes[targetIndex], newEmployes[dragIndex]];
-
-            const newBlocs = JSON.parse(JSON.stringify(planning.blocs));
-
-            for (const blocKey in newBlocs) {
-
-                const bloc = newBlocs[blocKey].data;
-
-                for (const date in bloc) {
-
-                    const lignes = bloc[date];
-                    if (!lignes || !lignes[0] || !lignes[1]) continue;
-
-                    const l0 = lignes[0];
-                    const l1 = lignes[1];
-
-                    const a0 = l0[dragIndex] ?? null;
-                    const b0 = l0[targetIndex] ?? null;
-
-                    const a1 = l1[dragIndex] ?? null;
-                    const b1 = l1[targetIndex] ?? null;
-
-                    l0[dragIndex] = b0;
-                    l0[targetIndex] = a0;
-
-                    l1[dragIndex] = b1;
-                    l1[targetIndex] = a1;
-                }
-            }
-           await setDoc(ref, {
-            employes: newEmployes,
-            blocs: newBlocs
-        }, { merge: true });
-
-        };
-    }); */
 }
 export function rendreHeadersInteractifs() {
-
+    if (!window.IS_ADMIN) return;
     const table = document.getElementById("planning");
     const headers = table.querySelectorAll("thead th");
 
@@ -170,21 +100,92 @@ export function rendreHeadersInteractifs() {
             // =========================
             th.onclick = async () => {
                 console.log("CLICK HEADER", index, th.textContent);
-                const nouveauNom = prompt("Nom employé :", th.textContent);
+                //ajout
+                const ancienNom = planning.employes[index - 1];
+                const nouveauNom = prompt("Nom employé :", th.ancienNom);
+                //fin ajout
+                
+                //const nouveauNom = prompt("Nom employé :", th.textContent);
+            
 
         if (!nouveauNom) return;
 
+        //ajout
+        const nouveauNomUpper = nouveauNom.toUpperCase();
+         // éviter renommage identique
+        if (ancienNom === nouveauNomUpper) return;
+        //fin ajout
+         // =========================
+        // MAJ EMPLOYÉS
+        // =========================
         const newEmployes = [...planning.employes];
-        newEmployes[index - 1] = nouveauNom.toUpperCase();
+        
+        //newEmployes[index - 1] = nouveauNom.toUpperCase();
+        //ajout
+         newEmployes[index - 1] = nouveauNomUpper;
 
+         // =========================
+        // CLONE BLOCS
+        // =========================
+        const newBlocs =
+        JSON.parse(JSON.stringify(planning.blocs));
+
+        // =========================
+        // RENOMMER LES CLÉS
+        // DANS TOUT LE PLANNING
+        // =========================
+        for (const blocKey in newBlocs) {
+
+            const bloc = newBlocs[blocKey].data;
+
+            for (const date in bloc) {
+
+                const lignes = bloc[date];
+
+                if (!lignes) continue;
+
+                [0, 1].forEach(i => {
+
+                    if (!lignes[i]) return;
+
+                    // ancienne donnée existe ?
+                    if (lignes[i][ancienNom]) {
+
+                        // copie nouvelle clé
+                        lignes[i][nouveauNomUpper] =
+                            lignes[i][ancienNom];
+
+                        // suppression ancienne clé
+                        delete lignes[i][ancienNom];
+                    }
+                });
+            }
+        }
+        // =========================
+        // SAVE FIRESTORE
+        // =========================
         const ref = doc(db, "planning", currentDoc);
+
+        await setDoc(ref, {
+            employes: newEmployes,
+            blocs: newBlocs
+        }, { merge: true });
+
+        // =========================
+        // SYNC LOCAL
+        // =========================
+        planning.employes = newEmployes;
+        planning.blocs = newBlocs;
+
+        renderPlanning();
+       /*  const ref = doc(db, "planning", currentDoc);
 
         await setDoc(ref, {
             employes: newEmployes
         }, { merge: true });
 
         planning.employes = newEmployes;
-        renderPlanning();
+        renderPlanning(); */
 
         };
 
@@ -212,34 +213,6 @@ export function rendreHeadersInteractifs() {
 
             const newBlocs = JSON.parse(JSON.stringify(planning.blocs));
 
-            /* for (const blocKey in newBlocs) {
-
-                const bloc = newBlocs[blocKey].data;
-
-                for (const date in bloc) {
-
-                    const lignes = bloc[date];
-
-                    //if (!lignes) continue;
-                    if (!lignes || !lignes[0] || !lignes[1]) continue;
-
-                    // 🔥 suppression par nom (clé objet)
-                    // 🔥 ligne 0
-                /*  if (lignes[0] && typeof lignes[0] === "object") {
-                        delete lignes[0][nomUpper];
-                    }
-
-                    // 🔥 ligne 1 (si existe)
-                    if (lignes[1] && typeof lignes[1] === "object") {
-                        delete lignes[1][nomUpper];
-                
-                // 🔥 SAFE delete by index (OK si structure array)
-                if (Array.isArray(lignes[0])) {
-                    lignes[0].splice(index, 1);
-                    lignes[1].splice(index, 1);
-                }
-                }
-            } */
             for (const blocKey in newBlocs) {
 
                     const bloc = newBlocs[blocKey].data;
@@ -315,7 +288,7 @@ export function initSelects() {
     }
 }
 export function initUI() {
-
+    //if (!window.IS_ADMIN) return;
     // 🔵 AJOUT TECH
     const addBtn = document.getElementById("addEmploye");
     if (addBtn) {
@@ -355,7 +328,6 @@ export function initUI() {
 
             const nouveaux = [...planning.employes];
             nouveaux.splice(index, 1);
-            //ajout
              // =========================
         // 2. CLONE DES BLOCS
         // =========================
@@ -386,7 +358,6 @@ export function initUI() {
                 }
             }
         }
-            //fin ajout
 
             await setDoc(ref, {
                 employes: nouveaux,

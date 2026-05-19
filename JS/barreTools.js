@@ -10,7 +10,7 @@ function clearSelection() {
 }
 
 function saveCell(td) {
-
+    if (!window.IS_ADMIN) return;
     updateCell(
         td.dataset.date,
         parseInt(td.dataset.ligne),
@@ -31,7 +31,9 @@ const tbody = document.querySelector("#planning tbody");
 
 // 🔹 MOUSEDOWN
 tbody.addEventListener("mousedown", e => {
-
+    //ajout
+     if (e.button === 2) return; // 🔥 ignore clic droit
+     //fin ajout
     const td = e.target.closest("td");
     if (!td || td.classList.contains("date-cell")) return;
 
@@ -48,6 +50,9 @@ tbody.addEventListener("mousedown", e => {
 tbody.addEventListener("mouseover", e => {
 
     if (!selecting) return;
+    //ajout
+    if (e.buttons === 2) return; // 🔥 ignore clic droit
+    //fin ajout
 
     const td = e.target.closest("td");
     if (!td || td.classList.contains("date-cell")) return;
@@ -58,7 +63,7 @@ tbody.addEventListener("mouseover", e => {
 
 // 🔹 MOUSEUP (Pinceau ici 🔥)
 tbody.addEventListener("mouseup", () => {
-
+    
     selecting = false;
 
     if (brushMode && brushCell && selectedCells.size > 0) {
@@ -86,7 +91,7 @@ tbody.addEventListener("mouseup", () => {
 
 // 🔹 CLICK (cellule active)
 tbody.addEventListener("click", e => {
-
+     if (!window.IS_ADMIN) return;
     const td = e.target.closest("td");
     if (!td || td.classList.contains("date-cell")) return;
 
@@ -104,7 +109,7 @@ document.addEventListener("mouseup", () => selecting = false);
 // COPIER
 // =============================
 document.getElementById("copyBtn").addEventListener("click", () => {
-
+    if (!window.IS_ADMIN) return;
     if (!brushCell) {
         alert("Clique d'abord sur une cellule.");
         return;
@@ -124,7 +129,7 @@ document.getElementById("copyBtn").addEventListener("click", () => {
 // COLLER (MULTI OK 🔥)
 // =============================
 document.getElementById("pasteBtn").addEventListener("click", () => {
-
+    if (!window.IS_ADMIN) return;
     if (!copiedCellData) {
         alert("Aucune cellule copiée.");
         return;
@@ -156,9 +161,9 @@ document.getElementById("pasteBtn").addEventListener("click", () => {
 // COULEURS (MULTI + SAVE 🔥)
 // =============================
 document.querySelectorAll(".color-btn").forEach(btn => {
-
+    //if (!window.IS_ADMIN) return;
     btn.addEventListener("click", () => {
-
+        if (!window.IS_ADMIN) return; // 🔥 ici seulement
         const color = btn.dataset.color;
         const selection = window.getSelection();
           // =============================
@@ -205,7 +210,7 @@ document.querySelectorAll(".color-btn").forEach(btn => {
 // GRAS
 // =============================
 document.getElementById("boldBtn").addEventListener("click", () => {
-
+    if (!window.IS_ADMIN) return;
     if (selectedCells.size > 0) {
 
         selectedCells.forEach(c => {
@@ -237,7 +242,7 @@ document.getElementById("boldBtn").addEventListener("click", () => {
 // PINCEAU
 // =============================
 document.getElementById("brushBtn").addEventListener("click", () => {
-
+    if (!window.IS_ADMIN) return;
     if (!brushCell) {
         alert("Clique d'abord sur une cellule modèle.");
         return;
@@ -246,4 +251,32 @@ document.getElementById("brushBtn").addEventListener("click", () => {
     brushMode = true;
     document.body.style.cursor = "copy";
 });
+// =============================
+// CTRL + V (COLLER NATIF MULTI)
+// =============================
+document.addEventListener("paste", (e) => {
 
+    if (!window.IS_ADMIN) return;
+
+    const text = e.clipboardData.getData("text/plain");
+
+    if (!text) return;
+
+    if (selectedCells.size === 0) return;
+
+    e.preventDefault();
+
+    selectedCells.forEach(c => {
+
+        if (c.classList.contains("date-cell")) return;
+
+        // 🔥 TEXTE UNIQUEMENT (pas de style navigateur)
+        c.innerHTML = text;
+
+        saveCell(c);
+
+        c.style.outline = "";
+    });
+
+    clearSelection();
+});

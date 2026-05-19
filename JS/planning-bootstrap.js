@@ -123,6 +123,13 @@ async function getUserRole(uid) {
 
             // export interdit aux users
             document.getElementById("exportBtn").disabled = !isAdmin;
+            //copier/coller interdit aux usagers
+            document.getElementById("copyBtn").disabled = !isAdmin;
+            document.getElementById("pasteBtn").disabled = !isAdmin;
+            document.getElementById("exportFormat").disabled = !isAdmin;
+            document.getElementById("brushBtn").disabled = !isAdmin;
+            document.getElementById("boldBtn").disabled = !isAdmin; 
+            //document.getElementById("color-btn").disabled = !isAdmin;
 
             await loadPlanning();
 

@@ -9,7 +9,7 @@ export function setIgnoreSnapshot(value) {
     ignoreSnapshot = value;
 }
 export function listenPlanning(docId, onUpdate) {
-
+    
     currentDoc = docId;
 
     const ref = doc(db, "planning", docId);
@@ -46,7 +46,7 @@ export function listenPlanning(docId, onUpdate) {
 }
 
 export async function updateCell(date, ligne, emp, cellData) {
-
+    if (!window.IS_ADMIN) return;
     isUpdating = true;
 
     const ref = doc(db, "planning", currentDoc);

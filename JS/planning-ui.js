@@ -1,7 +1,8 @@
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from "./APIS/firebase.js";
-import { currentDoc, planning } from "./planning-core.js";
+import { currentDoc, COLLECTION, planning } from "./planning-core.js";
 import { renderPlanning } from "./planning-render.js";
+import { cleanOrphanEmployees } from "./planning-edit.js";
 //let isDraggingColumn = false;
 let dragIndex = null;
 export function activerDragAndDropColonnes() {
@@ -12,7 +13,7 @@ export function activerDragAndDropColonnes() {
 
     const headers = table.querySelectorAll("thead th");
 
-    let dragIndex = null;
+    //let dragIndex = null;
 
     headers.forEach((th, index) => {
 
@@ -23,7 +24,9 @@ export function activerDragAndDropColonnes() {
 
         th.ondragstart = () => {
 
-            dragIndex = index - 1;
+           dragIndex = planning.employes.findIndex(
+            e => e.id === th.dataset.empId
+        );
 
             console.log("🚀 DRAG START :", dragIndex);
         };
@@ -36,22 +39,38 @@ export function activerDragAndDropColonnes() {
 
             e.preventDefault();
 
-            const targetIndex = index - 1;
+             const targetEmpId = th.dataset.empId;
 
-            if (
-                dragIndex === null ||
-                dragIndex === targetIndex
-            ) return;
+            if (!dragIndex || !targetEmpId) return;
+
 
             try {
 
-                const ref = doc(db, "planning", currentDoc);
+                const ref = doc(db, COLLECTION, currentDoc);
 
                 // =========================
                 // SWAP EMPLOYÉS UNIQUEMENT
                 // =========================
 
-                const newEmployes = [...planning.employes];
+                const newEmployes = structuredClone(planning.employes);
+                // employé drag
+                const draggedEmp = newEmployes[dragIndex];
+                if (!draggedEmp) return;
+
+                // index cible réel via ID
+                const targetIndex =
+                    newEmployes.findIndex(
+                        e => e.id === targetEmpId
+                    );
+
+                if (
+                    targetIndex === -1 ||
+                    targetIndex === dragIndex
+                ) return;
+
+                // =========================
+                // SWAP
+                // =========================
 
                 [
                     newEmployes[dragIndex],
@@ -69,6 +88,13 @@ export function activerDragAndDropColonnes() {
                     employes: newEmployes
                 }, { merge: true });
 
+                // =========================
+                // LOCAL SYNC
+                // =========================
+                planning.employes = newEmployes;
+
+                renderPlanning();
+
                 console.log("✅ Drag & Drop OK");
 
             } catch (err) {
@@ -85,174 +111,145 @@ export function activerDragAndDropColonnes() {
 
 }
 export function rendreHeadersInteractifs() {
-    if (!window.IS_ADMIN) return;
+   if (!window.IS_ADMIN) return;
+
     const table = document.getElementById("planning");
+    if (!table) return;
+
     const headers = table.querySelectorAll("thead th");
 
     headers.forEach((th, index) => {
 
         if (index === 0) return;
 
-            th.style.cursor = "pointer";
-
-            // =========================
-            // RENOMMER
-            // =========================
-            th.onclick = async () => {
-                console.log("CLICK HEADER", index, th.textContent);
-                //ajout
-                const ancienNom = planning.employes[index - 1];
-                const nouveauNom = prompt("Nom employé :", th.ancienNom);
-                //fin ajout
-                
-                //const nouveauNom = prompt("Nom employé :", th.textContent);
-            
-
-        if (!nouveauNom) return;
-
-        //ajout
-        const nouveauNomUpper = nouveauNom.toUpperCase();
-         // éviter renommage identique
-        if (ancienNom === nouveauNomUpper) return;
-        //fin ajout
-         // =========================
-        // MAJ EMPLOYÉS
+        th.style.cursor = "pointer";
         // =========================
-        const newEmployes = [...planning.employes];
+        // DONNÉES EMPLOYÉ
+        // =========================
+        const empId = th.dataset.empId;
+        const empName = th.dataset.empName || "[SANS NOM]";
+        console.log("HEADER =", empId, empName);
+        if (!empId) return;
+        // =========================
+        // RENOMMER (CLICK GAUCHE)
+        // =========================
+
+           th.onclick = async () => {
+
+            const nouveauNom = prompt(
+                "Nom employé :",
+                empName
+            );
+
+            if (!nouveauNom) return;
+
+            const nouveauNomUpper =
+                nouveauNom.trim().toUpperCase();
+
+            if (nouveauNomUpper === (empName || "").toUpperCase()) return;
+
+            const ref = doc(db, COLLECTION, currentDoc);
+
+            // 🔥 FIRESTORE = SOURCE UNIQUE
+            const snap = await getDoc(ref);
+            const data = snap.data();
+
+            if (!data?.employes) return;
+
+            // =========================
+            // MAJ EMPLOYÉS
+            // =========================
+            const newEmployes =
+                structuredClone(data.employes);
+
+            const target = newEmployes.find(
+                e => e.id === empId
+            );
+
+            if (!target) return;
+
+            // 🔥 SEUL LE NOM CHANGE
+            target.name = nouveauNomUpper;
+
+            // =========================
+            // SAVE
+            // =========================
+            await setDoc(ref, {
+                employes: newEmployes
+            }, { merge: true });
+
+            // =========================
+            // LOCAL SYNC
+            // =========================
+            planning.employes = newEmployes;
+
+            renderPlanning();
         
-        //newEmployes[index - 1] = nouveauNom.toUpperCase();
-        //ajout
-         newEmployes[index - 1] = nouveauNomUpper;
-
-         // =========================
-        // CLONE BLOCS
-        // =========================
-        const newBlocs =
-        JSON.parse(JSON.stringify(planning.blocs));
+        };
 
         // =========================
-        // RENOMMER LES CLÉS
-        // DANS TOUT LE PLANNING
+        // SUPPRESSION (CLICK DROIT)
         // =========================
-        for (const blocKey in newBlocs) {
+        th.oncontextmenu = async (e) => {
+           e.preventDefault();
 
-            const bloc = newBlocs[blocKey].data;
-
-            for (const date in bloc) {
-
-                const lignes = bloc[date];
-
-                if (!lignes) continue;
-
-                [0, 1].forEach(i => {
-
-                    if (!lignes[i]) return;
-
-                    // ancienne donnée existe ?
-                    if (lignes[i][ancienNom]) {
-
-                        // copie nouvelle clé
-                        lignes[i][nouveauNomUpper] =
-                            lignes[i][ancienNom];
-
-                        // suppression ancienne clé
-                        delete lignes[i][ancienNom];
-                    }
-                });
+         if (!confirm(`Supprimer ${empName} ?`)) {
+                return;
             }
+
+        const ref = doc(db, COLLECTION, currentDoc);
+
+        // =========================
+        // FIRESTORE = SOURCE UNIQUE
+        // =========================
+        const snap = await getDoc(ref);
+        const data = snap.data();
+
+        if (!data?.blocs || !data?.employes) {
+            console.warn("Planning invalide");
+            return;
         }
+
+        // =========================
+        // EMPLOYÉS RESTANTS
+        // =========================
+        const newEmployes = data.employes.filter(
+            e => e.id !== empId
+        );
+        const actEmpIds = newEmployes.map(
+        e => e.id
+    );
+
+        // =========================
+        // CLONE BLOCS RÉCENTS
+        // =========================
+        const newBlocs = structuredClone(data.blocs);
+
+        // =========================
+        // CLEAN IDS ORPHELINS
+        // =========================
+        cleanOrphanEmployees(newBlocs,actEmpIds);
+   
         // =========================
         // SAVE FIRESTORE
         // =========================
-        const ref = doc(db, "planning", currentDoc);
-
         await setDoc(ref, {
             employes: newEmployes,
-            blocs: newBlocs
-        }, { merge: true });
-
+            blocs: newBlocs,
+            presence: data.presence || {}
+        });
         // =========================
         // SYNC LOCAL
         // =========================
         planning.employes = newEmployes;
         planning.blocs = newBlocs;
+        planning.presence = data.presence || {};
 
         renderPlanning();
-       /*  const ref = doc(db, "planning", currentDoc);
 
-        await setDoc(ref, {
-            employes: newEmployes
-        }, { merge: true });
-
-        planning.employes = newEmployes;
-        renderPlanning(); */
-
-        };
-
-        // =========================
-        // SUPPRIMER
-        // =========================
-      
-        th.oncontextmenu = async (e) => {
-            e.preventDefault();
-
-            const emp = (th.dataset.emp || th.textContent).toUpperCase();
-
-            console.log("DELETE EMP:", emp);
-
-            if (!confirm("Supprimer cet employé ?")) return;
-
-            const ref = doc(db, "planning", currentDoc);
-
-            const newEmployes = [...planning.employes];
-            const index = newEmployes.indexOf(emp);
-
-            if (index === -1) return;
-
-            newEmployes.splice(index, 1);
-
-            const newBlocs = JSON.parse(JSON.stringify(planning.blocs));
-
-            for (const blocKey in newBlocs) {
-
-                    const bloc = newBlocs[blocKey].data;
-
-                    for (const date in bloc) {
-
-                        const lignes = bloc[date];
-                        if (!lignes) continue;
-
-                        [0, 1].forEach(i => {
-
-                            if (!lignes[i]) return;
-
-                            // 🔥 Si ancien format tableau → on ignore
-                            if (Array.isArray(lignes[i])) return;
-
-                            // 🔥 suppression objet
-                            Object.keys(lignes[i]).forEach(key => {
-                                if (key.toUpperCase() === emp) {
-                                    delete lignes[i][key];
-                                }
-                            });
-                        });
-                    }
-                
-                }
-
-                await setDoc(ref, {
-                    employes: newEmployes,
-                    blocs: newBlocs,
-                    presence: planning.presence || {}
-                });
-            
-                planning.employes = newEmployes;
-                planning.blocs = newBlocs;
-
-                renderPlanning();
-                console.log("APRÈS DELETE:", newBlocs);
-         };
-    });
+        console.log("DELETE OK :", empName);
+     };
+ });
      
 }
 export function initSelects() {
@@ -287,100 +284,151 @@ export function initSelects() {
         moisSelect.value = "1";
     }
 }
+// =========================
+// REFRESH SELECT EMPLOYÉS
+// =========================
+export function refreshEmployeSelect() {
+
+    const select =
+        document.getElementById("removeEmployeSelect");
+
+    if (!select || !planning.employes) return;
+
+    select.innerHTML = "";
+
+    planning.employes.forEach(emp => {
+
+        const option = document.createElement("option");
+
+        option.value = emp.id;
+        option.textContent =  emp.name || "[SANS NOM]";
+
+        select.appendChild(option);
+    });
+}
 export function initUI() {
     //if (!window.IS_ADMIN) return;
     // 🔵 AJOUT TECH
     const addBtn = document.getElementById("addEmploye");
     if (addBtn) {
-        addBtn.addEventListener("click", async () => {
+        addBtn.onclick = async () => {
             const nom = prompt("Nom du technicien ?");
+
         if (!nom) return;
 
-        const ref = doc(db, "planning", currentDoc);
+        const ref = doc(db, COLLECTION, currentDoc);
 
-        const nouveaux = [...planning.employes, nom.toUpperCase()];
+        // 🔥 ID UNIQUE
+        const empId =
+            "emp_" + crypto.randomUUID();
+
+        // 🔥 nouvel employé format objet
+        const nouveaux = [
+            ...planning.employes,
+            {
+                id: empId,
+                name: nom.toUpperCase()
+            }
+        ];
 
         await setDoc(ref, {
             employes: nouveaux
         }, { merge: true });
 
         planning.employes = nouveaux;
+
         renderPlanning();
-        });
+        };
     }
 
     // 🔴 SUPPRESSION TECH
-    const removeBtn = document.getElementById("removeEmploye");
-    if (removeBtn) {
-        removeBtn.addEventListener("click", async () => {
+   const select = document.getElementById("removeEmployeSelect");
+   const deleteBtn = document.getElementById("deleteEmployeBtn");
+   console.log("deleteBtn =", deleteBtn);
+console.log("select =", select);
 
-            if (!planning.employes.length) return;
+if (select && deleteBtn) {
 
-            const nom = prompt("Nom du technicien à supprimer ?");
-            if (!nom) return;
-            //ajout
-            const nomUpper = nom.toUpperCase();
-            //fin ajout
-            const ref = doc(db, "planning", currentDoc);
+    // =========================
+    // REMPLIR LE SELECT
+    // =========================
+    select.innerHTML = "";
+    if (!planning?.employes?.length) return;
 
-            const index = planning.employes.indexOf(nomUpper);
-            if (index === -1) return;
+        planning.employes.forEach(emp => {
 
-            const nouveaux = [...planning.employes];
-            nouveaux.splice(index, 1);
-             // =========================
-        // 2. CLONE DES BLOCS
+            const option = document.createElement("option");
+
+            option.value = emp.id;
+            option.textContent = emp.name;
+
+            select.appendChild(option);
+    });
+    deleteBtn.onclick = async () => {
+        const empId = select.value;
+
+        if (!empId) return;
+        const ref = doc(db, COLLECTION, currentDoc);
+
         // =========================
-        const newBlocs = JSON.parse(JSON.stringify(planning.blocs));
-
+        // FIRESTORE SOURCE UNIQUE
         // =========================
-        // 3. SUPPRESSION DES DONNÉES
-        // =========================
-        for (const blocKey in newBlocs) {
+        const snap = await getDoc(ref);
+        const data = snap.data();
 
-            const bloc = newBlocs[blocKey].data;
 
-            for (const date in bloc) {
-
-                const lignes = bloc[date];
-
-                if (!lignes) continue;
-
-                // 🔥 suppression par nom (clé objet)
-                // 🔥 ligne 0
-                if (lignes[0] && typeof lignes[0] === "object") {
-                    delete lignes[0][nomUpper];
-                }
-
-                // 🔥 ligne 1 (si existe)
-                if (lignes[1] && typeof lignes[1] === "object") {
-                    delete lignes[1][nomUpper];
-                }
-            }
+        if (!data?.blocs || !data?.employes) {
+            console.warn("Planning invalide");
+            return;
         }
 
-            await setDoc(ref, {
-                employes: nouveaux,
-                blocs: newBlocs,
-                presence: planning.presence || {}
-            });
+        // =========================
+        // EMPLOYÉ À SUPPRIMER
+        // =========================
+        const empObj = data.employes.find(e => e.id === empId);
+        const empName = empObj?.name || empId;
 
-            // =========================
-            // 5. SYNC LOCAL + RENDER
-            // =========================
-            planning.employes = nouveaux;
-            planning.blocs = newBlocs;
-            renderPlanning();
-        });
-    }
+        if (!confirm(`Supprimer ${empName} ?`)) return;
 
-    // 🔐 LOGIN (simple log pour test)
-    const loginBtn = document.getElementById("loginBtn");
-    if (loginBtn) {
-        loginBtn.addEventListener("click", () => {
-            const email = document.getElementById("email").value;
-            console.log("Login demandé :", email);
+        // =========================
+        // EMPLOYÉS RESTANTS
+        // =========================
+        const nouveaux = data.employes.filter(e => e.id !== empId);
+
+        const activeEmpIds = nouveaux.map(e => e.id);
+        
+
+        // =========================
+        // CLONE BLOCS
+        // =========================
+        const newBlocs = structuredClone(data.blocs);
+      
+        // =========================
+        //CLEAN IDS ORPHELINS
+        // =========================
+        cleanOrphanEmployees(newBlocs, activeEmpIds);
+
+        // =========================
+        // SAVE FIRESTORE
+        // =========================
+        await setDoc(ref, {
+            employes: nouveaux,
+            blocs: newBlocs,
+            presence: data.presence || {}
         });
-    }
+        
+        // =========================
+        // LOCAL SYNC
+        // =========================
+        planning.employes = nouveaux;
+        planning.blocs = newBlocs;
+        planning.presence = data.presence || {};
+
+        renderPlanning();
+
+ };
+
+}
+
 
 }

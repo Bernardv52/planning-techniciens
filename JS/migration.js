@@ -1,116 +1,108 @@
 import { db } from "./APIS/firebase.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { cleanOrphanEmployees } from "./planning-edit.js";
 //Dans la console du navigateur lancer : await migratePlanning("2024");
-export async function migratePlanning(docId) {
-    const ref = doc(db, "planning", docId);
-    const snap = await getDoc(ref);
+  
+export async function migrateYear(oldCol, newCol, docId) {
 
-    if (!snap.exists()) {
-        console.log("❌ Document introuvable");
-        return;
-    }
+    const oldRef = doc(db, oldCol, docId);
+    const snap = await getDoc(oldRef);
+
+    if (!snap.exists()) return;
 
     const data = snap.data();
 
-    const employes = data.employes || [];
-    const blocs = data.blocs || {};
-    const presence= data.presence || {};
+    console.log("📦 Migration :", docId);
 
-    console.log("🚀 MIGRATION EN COURS...");
+    // =========================
+    // 1. EMPLOYÉS (ON GARDE LES IDS EXISTANTS)
+    // =========================
+    const newEmployes = (data.employes || []).map(emp => ({
+        id: emp.id,
+        name: emp.name
+    }));
 
-    for (const blocKey in blocs) {
+    const validIds = newEmployes.map(e => e.id);
 
-        const bloc = blocs[blocKey].data;
+    // =========================
+    // 2. BLOCS (NETTOYAGE SIMPLE + SAFE)
+    // =========================
+    const newBlocs = structuredClone(data.blocs || {});
+
+    for (const blocKey in newBlocs) {
+
+        const bloc = newBlocs[blocKey]?.data;
+        if (!bloc) continue;
 
         for (const date in bloc) {
 
             const lignes = bloc[date];
+            if (!lignes) continue;
 
-            if (!lignes || !lignes[0] || !lignes[1]) continue;
+            [0, 1].forEach(i => {
 
-            // =========================
-            // 🔥 CONVERTIR TABLEAU → OBJET
-            // =========================
-            for (let i = 0; i < 2; i++) {
+                const obj = lignes[i];
+                if (!obj) return;
 
-                if (Array.isArray(lignes[i])) {
+                const newObj = {};
 
-                    const newObj = {};
+                Object.keys(obj).forEach(key => {
 
-                    lignes[i].forEach((val, index) => {
+                    // garde uniquement les IDs valides
+                    if (validIds.includes(key)) {
+                        newObj[key] = obj[key];
+                    }
+                });
 
-                        const emp = employes[index];
-
-                        if (!emp) return;
-
-                        newObj[emp] = val || {
-                            html: "",
-                            bg: "",
-                            color: "",
-                            weight: ""
-                        };
-                    });
-
-                    lignes[i] = newObj;
-                }
-            }
+                lignes[i] = newObj;
+            });
         }
     }
 
     // =========================
-    // 🔥 SAVE
+    // 3. WRITE NEW DOC
     // =========================
-    await setDoc(ref, {
-        employes,
-        blocs,
-        presence
-    }, { merge: true });
-    console.log("✅ MIGRATION TERMINÉE");
-    /* const annee = 2026;
+    await setDoc(doc(db, newCol, docId), {
+        employes: newEmployes,
+        blocs: newBlocs,
+        presence: data.presence || {}
+    });
 
-    const blocs = [1, 2, 3];
-
-    const newRef = doc(db, "planning", `${annee}`);
-
-    let newData = {
-        employes: [],
-        blocs: {},
-        presence: {}
-    };
-
-    for (const bloc of blocs) {
-
-        const oldId = `${annee}_bloc${bloc}`;
-        const oldRef = doc(db, "planning", oldId);
-        const snap = await getDoc(oldRef);
-
-        if (snap.exists()) {
-            const data = snap.data();
-
-            console.log("migration bloc :", bloc);
-
-            newData.blocs[`bloc${bloc}`] = {
-                data: data.data || {}
-            };
-
-            // 👉 on récupère les employés (si présents)
-            if (data.employes && data.employes.length > 0) {
-                newData.employes = data.employes;
-            }
-
-            // 👉 présence (si existe)
-            if (data.presence) {
-                newData.presence = {
-                    ...newData.presence,
-                    ...data.presence
-                };
-            }
-        }
-    }
-
-    await setDoc(newRef, newData);
-
-    console.log("✅ migration terminée :", newData); */
+    console.log("✅ Migration OK :", docId);
 }
-window.migratePlanning = migratePlanning;
+export async function migrateAll() {
+
+    const oldCol = "planning_MIGRATION_TEST";
+    const newCol = "planningTechniciens";
+
+    const years = ["2025", "2026"];
+
+    for (const year of years) {
+        await migrateYear(oldCol, newCol, year);
+    }
+
+    console.log("🎉 Migration terminée");
+}
+
+//pour l appeler dans la console
+//window.migrateAll = migrateAll;
+//Et pour envoyer une année en particulier : migrateYear("planningTechniciens","planning_MIGRATION_TEST","2026");
+// Methode pour créer une collection directement dans firebase :
+/*Méthode 1 — via la console Firebase (la plus simple)
+Aller dans :
+ https://console.firebase.google.com
+Ouvrir le projet
+Clique :
+Firestore Database
+Clique :
+“Start collection” (ou “Ajouter une collection”)
+
+on mets par exemple:
+test
+Puis on ajoute un document :
+testDoc
+Ajoute des champs :
+message → "Firestore fonctionne "
+date → "2026-04-21T07:36:22.470Z"
+ Et voilà, la collection est créée automatiquement.*/
 

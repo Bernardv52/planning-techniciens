@@ -1,34 +1,39 @@
 import { doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from "./APIS/firebase.js";
+
 export let planning = {};
 let isUpdating = false;
 let loading = true;
 export let currentDoc = null;
 export let ignoreSnapshot = false;
+export const USE_MIGRATED = true;
+
+export const COLLECTION = "planningTechniciens";
 export function setIgnoreSnapshot(value) {
     ignoreSnapshot = value;
 }
 export function listenPlanning(docId, onUpdate) {
     
+    if (!docId) return;
     currentDoc = docId;
-
-    const ref = doc(db, "planning", docId);
+    const ref = doc(db, COLLECTION, currentDoc);
 
     loading = true;
 
     const unsubscribe = onSnapshot(ref, (snap) => {
 
         if (!snap.exists()) return;
-        if (isUpdating) return;
+        if (isUpdating) {
+            console.log("snapshot ignoré (update local)");
+            return;
+        }
         if (ignoreSnapshot) return;
         const data = snap.data();
         
 
-        planning = {
-        employes: data.employes || [],
-        blocs: data.blocs || {},
-        presence: data.presence || {}
-        };
+        planning.employes = data.employes || [];
+        planning.blocs = data.blocs || {};
+        planning.presence = data.presence || {};
 
         loading = false;
 
@@ -47,9 +52,9 @@ export function listenPlanning(docId, onUpdate) {
 
 export async function updateCell(date, ligne, emp, cellData) {
     if (!window.IS_ADMIN) return;
+    if (!currentDoc) return;
     isUpdating = true;
-
-    const ref = doc(db, "planning", currentDoc);
+    const ref = doc(db, COLLECTION, currentDoc);
     const bloc = document.getElementById("moisSelect").value;
 
     try {
@@ -57,8 +62,8 @@ export async function updateCell(date, ligne, emp, cellData) {
             [`blocs.bloc${bloc}.data.${date}.${ligne}.${emp}`]: cellData
         });
     } finally {
-        setTimeout(() => {
+        
             isUpdating = false;
-        }, 50);
+        
     }
 }

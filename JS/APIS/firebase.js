@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyAKyR8MU6evyhL4qo-fBuza6keMJMzowBg",
   authDomain: "planning-tech.firebaseapp.com",
   projectId: "planning-tech",

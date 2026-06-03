@@ -1,10 +1,11 @@
 import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from "./APIS/firebase.js";
 import { user } from "./auth.js";
+import { COLLECTION, currentDoc } from "./planning-core.js";
 
 export async function setEditing(cellId) {
 
-    const ref = doc(db, "planning", window.currentDoc);
+    const ref = doc(db, COLLECTION, currentDoc);
 
     await updateDoc(ref, {
         [`presence.${user.id}`]: {
@@ -18,7 +19,7 @@ export async function setEditing(cellId) {
 
 export async function clearEditing() {
 
-    const ref = doc(db, "planning", window.currentDoc);
+    const ref = doc(db, COLLECTION, currentDoc);
 
     await updateDoc(ref, {
         [`presence.${user.id}.editing`]: null,

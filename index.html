@@ -9,7 +9,7 @@
     <div>
      <img id="logoPlanning" src="./Logo/Logo.png"> 
     </div>
-    <div id="loginPage">
+    <div id="loginPage"> 
         <div id="loginBox">
             <h3>Connexion</h3>
             <input type="email" id="email">
@@ -17,12 +17,12 @@
             <button id="loginBtn">Se connecter</button>
         </div>
 </div>
-    <div id="appPage" style="display:none;">
-
-<button id="logoutBtn">Logout</button>
-<div class="planning-container">
-    <h2>Planning</h2>
-</div>
+<div id="appPage" style="display:none;">
+    <button id="logoutBtn">Logout</button>
+    <div class="planning-container">
+    <h2>Planning de l'année</h2>
+    <h2 id="an"></h2>
+    </div>
      <div class="toolbar">
         <span>Couleur :</span>
         <button class="color-btn" data-color="#000000" style="background:#000000"></button>
@@ -45,6 +45,7 @@
             <option value="docx">Word (.docx)</option>
         </select>
         <button id="exportBtn">Exporter</button>
+        <!-- <button id="btnMigrate">Migration planning (TEST)</button> -->
     </div>
     <div class="top-bar">
         <label>Choisir l'année :</label>
@@ -56,7 +57,13 @@
             <option value="3">Septembre - Décembre</option>
         </select>
         <button id="addEmploye">Ajout tech</button>
-        <button id="removeEmploye">Supprime tech</button>
+        <span class="span">Suppression
+        <select id="removeEmployeSelect"></select>
+        <button id="deleteEmployeBtn">
+            Supprimer technicien
+        </button>
+        </span>
+        <button id="adminBtn">Administration</button>
     </div>
     <div class="table-scroll">
         <table id="planning">

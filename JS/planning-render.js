@@ -1,6 +1,6 @@
 import { planning, updateCell } from "./planning-core.js";
 import { getJoursFeries, formatDateKey } from "./planning-utils.js";
-import { activerDragAndDropColonnes, rendreHeadersInteractifs } from "./planning-ui.js";
+import { activerDragAndDropColonnes, rendreHeadersInteractifs, refreshEmployeSelect, initUI } from "./planning-ui.js";
 import { autoResizeHeaders } from "./planning-edit.js";
 
 // =========================
@@ -42,10 +42,14 @@ export function renderPlanning() {
     // =========================
     employes.forEach(emp => {
         const th = document.createElement("th");
-        th.textContent = emp;
 
-        // 🔥 IMPORTANT : identifiant stable
-        th.dataset.emp = emp;
+        th.textContent =  emp.name || "[SANS NOM]";
+
+        // ID STABLE
+        th.dataset.empId = emp.id;
+
+        // nom affiché
+        th.dataset.empName = emp.name ||"";
 
         headerRow.appendChild(th);
     });
@@ -121,12 +125,13 @@ export function renderPlanning() {
             td.contentEditable = window.IS_ADMIN;
 
             td.dataset.date = dateISO;
-            td.dataset.emp = emp;
+            td.dataset.empId = emp.id;
+            td.dataset.empName = emp.name;
             td.dataset.ligne = 0;
 
             td.style.backgroundColor = couleur;
 
-            const data = blocData?.[dateISO]?.[0]?.[emp];
+            const data = blocData?.[dateISO]?.[0]?.[emp.id];
 
             if (data) {
                 td.innerHTML = data.html || "";
@@ -136,7 +141,7 @@ export function renderPlanning() {
             }
 
             td.addEventListener("blur", () => {
-                updateCell(dateISO, 0, emp, {
+                updateCell(dateISO, 0, emp.id, {
                     html: td.innerHTML,
                     bg: td.style.backgroundColor,
                     //bg: window.getComputedStyle(td).backgroundColor,
@@ -161,12 +166,13 @@ export function renderPlanning() {
             td.contentEditable = window.IS_ADMIN;
 
             td.dataset.date = dateISO;
-            td.dataset.emp = emp;
+            td.dataset.empId = emp.id;
+            td.dataset.empName = emp.name;
             td.dataset.ligne = 1;
 
             td.style.backgroundColor = couleur;
 
-            const data = blocData?.[dateISO]?.[1]?.[emp];
+            const data = blocData?.[dateISO]?.[1]?.[emp.id];
 
             if (data) {
                 td.innerHTML = data.html || "";
@@ -176,7 +182,7 @@ export function renderPlanning() {
             }
 
             td.addEventListener("blur", () => {
-                updateCell(dateISO, 1, emp, {
+                updateCell(dateISO, 1, emp.id, {
                     html: td.innerHTML,
                     bg: td.style.backgroundColor,
                     //bg: window.getComputedStyle(td).backgroundColor,
@@ -198,6 +204,8 @@ export function renderPlanning() {
         activerDragAndDropColonnes();
         rendreHeadersInteractifs();
         autoResizeHeaders();
+        refreshEmployeSelect();
+        initUI();
     }, 0);
 }
 

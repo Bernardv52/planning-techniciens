@@ -1,6 +1,37 @@
 import { renderPlanning, renderPresence } from "./planning-render.js";
 import { activerDragAndDropColonnes, rendreHeadersInteractifs } from "./planning-ui.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { planning, COLLECTION, currentDoc} from "./planning-core.js";
 
+export function cleanOrphanEmployees(blocs, validIds) {
+
+    for (const blocKey in blocs) {
+
+        const bloc = blocs[blocKey]?.data;
+        if (!bloc) continue;
+
+        for (const date in bloc) {
+
+            const lignes = bloc[date];
+            if (!lignes) continue;
+
+            [0, 1].forEach(i => {
+
+                const obj = lignes[i];
+                if (!obj) return;
+
+                Object.keys(obj).forEach(key => {
+
+                    if (!validIds.includes(key)) {
+                        delete obj[key];
+                    }
+
+                });
+
+            });
+        }
+    }
+}
 /**
  * 🔵 Fonction centrale de refresh
  */

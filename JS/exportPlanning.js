@@ -89,175 +89,147 @@ function exportXLSX() {
     XLSX.writeFile(wb, "planning.xlsx");
 }
 async function exportPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-        orientation: "landscape",
-        unit: "mm",
-        format: "a4"
-    });
-
-    const annee = document.getElementById("anneeSelect").value;
-    const bloc = document.getElementById("moisSelect").value;
-
-    function getPeriode(num) {
-        switch (num) {
-            case "1": return "Janv-Avril";
-            case "2": return "Mai-Août";
-            case "3": return "Sept-Decembre";
-            default: return "";
-        }
-    }
-
-    const quadrimestre = getPeriode(bloc);
-    const titre = `Planning ${quadrimestre} - ${annee}`;
-    const dateGen = new Date().toLocaleDateString("fr-FR");
-
-    // ===== Logo =====
-    const logo = new Image();
-    logo.src = "Logo/Logo.png";
-    logo.onload = () => {
-
-        doc.addImage(logo, "PNG", 10, 8, 30, 15);
-
-        // ===== Titres =====
-        doc.setFontSize(16);
-        doc.text(titre, 45, 15);
-        doc.setFontSize(10);
-        doc.text(`Généré le ${dateGen}`, 45, 22);
-
-        // ===== Largeurs dynamiques =====
-        const table = document.getElementById("planning");
-        const nbColonnes = table.querySelectorAll("thead th").length;
-        const pageWidth = doc.internal.pageSize.getWidth() - 40; // marge gauche + droite
-        const dateColWidth = 12;
-        const remainingWidth = pageWidth - dateColWidth;
-        const dataColWidth = remainingWidth / (nbColonnes - 1);
-
-        // ===== Tableau =====
-        doc.autoTable({
-            html: "#planning",
-            startY: 30,
-            theme: "grid",
-            margin: { left: 10, right: 10 },
-
-            styles: {
-                fontSize: 7,
-                cellPadding: 1.5,
-                valign: "middle",
-                halign: "center",
-                overflow: "linebreak",   // 🔥 force retour à la ligne
-                cellWidth: dataColWidth  // 🔥 largeur FIXE
-            },
-
-            columnStyles: {
-                0: { cellWidth: dateColWidth }  // colonne DATE fixe
-            },
-        
-        didParseCell: function(data) {
-            const cell = data.cell.raw;
-        if (!cell) return;
-
-        // 🔹 Fond (reste sur le TD)
-        const cellStyle = getComputedStyle(cell);
-        const bg = cssToRgb(cellStyle.backgroundColor);
-        if (bg) data.cell.styles.fillColor = bg;
-
-        // 🔹 Cherche un élément interne stylé
-        const styledChild = cell.querySelector("span, b, strong");
-
-        if (styledChild) {
-            const innerStyle = getComputedStyle(styledChild);
-
-            // Couleur texte
-            const textColor = cssToRgb(innerStyle.color);
-            if (textColor) data.cell.styles.textColor = textColor;
-
-            // Gras
-            if (innerStyle.fontWeight === "700" || innerStyle.fontWeight === "bold") {
-                data.cell.styles.fontStyle = "bold";
-            }
-        } else {
-            // fallback si pas de span
-            const textColor = cssToRgb(cellStyle.color);
-            if (textColor) data.cell.styles.textColor = textColor;
-
-            if (cellStyle.fontWeight === "700" || cellStyle.fontWeight === "bold") {
-                data.cell.styles.fontStyle = "bold";
-            }
-        }
-        }
+    
+    function generatePDF(withLogo) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: "landscape",
+            unit: "mm",
+            format: "a4"
         });
 
-        doc.save(`Planning_Tech_${quadrimestre}_${annee}.pdf`);
-    };
+        const annee = document.getElementById("anneeSelect").value;
+        const bloc = document.getElementById("moisSelect").value;
 
-    logo.onerror = () => {
-        console.log("Logo introuvable → export sans logo");
-
-        // Même export sans logo
-        const table = document.getElementById("planning");
-        const nbColonnes = table.querySelectorAll("thead th").length;
-        const pageWidth = doc.internal.pageSize.getWidth() - 40;
-        const dateColWidth = 12;
-        const remainingWidth = pageWidth - dateColWidth;
-        const dataColWidth = (remainingWidth * 0.95) / (nbColonnes - 1);
-
-        doc.autoTable({
-            html: "#planning",
-            startY: 30,
-            theme: "grid",
-            margin: { left: 10, right: 10 },
-
-            styles: {
-                fontSize: 7,
-                cellPadding: 1.5,
-                valign: "middle",
-                halign: "center",
-                overflow: "linebreak",   // 🔥 force retour à la ligne
-                cellWidth: dataColWidth  // 🔥 largeur FIXE
-            },
-
-            columnStyles: {
-                0: { cellWidth: dateColWidth }  // colonne DATE fixe
-            },
-        didParseCell: function(data) {
-            const cell = data.cell.raw;
-        if (!cell) return;
-
-        // 🔹 Fond (reste sur le TD)
-        const cellStyle = getComputedStyle(cell);
-        const bg = cssToRgb(cellStyle.backgroundColor);
-        if (bg) data.cell.styles.fillColor = bg;
-
-        // 🔹 Cherche un élément interne stylé
-        const styledChild = cell.querySelector("span, b, strong");
-
-        if (styledChild) {
-            const innerStyle = getComputedStyle(styledChild);
-
-            // Couleur texte
-            const textColor = cssToRgb(innerStyle.color);
-            if (textColor) data.cell.styles.textColor = textColor;
-
-            // Gras
-            if (innerStyle.fontWeight === "700" || innerStyle.fontWeight === "bold") {
-                data.cell.styles.fontStyle = "bold";
+        function getPeriode(num) {
+            switch (num) {
+                case "1": return "Janv-Avril";
+                case "2": return "Mai-Août";
+                case "3": return "Sept-Decembre";
+                default: return "";
             }
+        }
+
+        const quadrimestre = getPeriode(bloc);
+        const titre = `Planning ${quadrimestre} - ${annee}`;
+        const dateGen = new Date().toLocaleDateString("fr-FR");
+
+        if (withLogo) {
+            doc.addImage(logo, "PNG", 10, 8, 30, 15);
+            doc.text(titre, 45, 15);
+            doc.text(`Généré le ${dateGen}`, 45, 22);
+            doc.setFontSize(16);
         } else {
-            // fallback si pas de span
-            const textColor = cssToRgb(cellStyle.color);
-            if (textColor) data.cell.styles.textColor = textColor;
+            doc.text(titre, 10, 15);
+            doc.text(`Généré le ${dateGen}`, 10, 22);
+            doc.setFontSize(10);
+        }
 
-            if (cellStyle.fontWeight === "700" || cellStyle.fontWeight === "bold") {
-                data.cell.styles.fontStyle = "bold";
-            }
-        }
-        }
+            // ===== Largeurs dynamiques =====
+            const table = document.getElementById("planning");
+            const nbColonnes = table.querySelectorAll("thead th").length;
+            const usableWidth = doc.internal.pageSize.getWidth()-20;
+            const dateColWidth = 20;
+            const pageWidth = doc.internal.pageSize.getWidth() //- 20 - 5; // marge gauche + droite
             
-        });
+            const remainingWidth = pageWidth - dateColWidth;
+            const marginLeft = 10;
+            const marginRight = 10;
+            
+            const dataColWidth =   
+                ( usableWidth - dateColWidth) / (nbColonnes - 1);
 
-        doc.save(`Planning_Tech_${quadrimestre}_${annee}.pdf`);
-    };
+                console.log({
+                nbColonnes,
+                dataColWidth
+                });
+
+            // ===== Tableau =====
+            doc.autoTable({
+                html: "#planning",
+                startY: 30,
+                theme: "grid",
+                margin: { left: 10, right: 10 },
+
+                styles: {
+                    fontSize: 7,
+                    cellPadding: 1.5,
+                    valign: "middle",
+                    halign: "center",
+                    overflow: "linebreak",   // 🔥 force retour à la ligne
+                // minCellHeight: 6,
+                
+                },
+
+                columnStyles: {
+                    0: { cellWidth: dateColWidth }  // colonne DATE fixe
+                },
+            // 👉 IMPORTANT : on force la largeur des autres colonnes dynamiquement
+            didParseCell: function(data) {
+                // largeur UNIQUEMENT
+                // colonnes techniciens
+
+                if(data.column.index>0){
+
+                    data.cell.styles.cellWidth =
+                    dataColWidth;
+
+                }
+
+                const cell = data.cell.raw;
+                if (!cell) return;
+                const cellStyle=getComputedStyle(cell);
+                const bg=
+                cssToRgb(
+                cellStyle.backgroundColor
+                );
+
+                if(bg)
+                data.cell.styles.fillColor=bg;
+
+                const styled=
+                cell.querySelector(
+                "span,b,strong"
+                );
+
+                const style=
+                getComputedStyle(
+                styled||cell
+                );
+
+                const textColor=
+                cssToRgb(style.color); 
+
+                if(textColor)
+                data.cell.styles.textColor=
+                textColor;
+
+                if(
+                style.fontWeight==="700"||
+                style.fontWeight==="bold"
+                ){
+
+                data.cell.styles.fontStyle=
+                "bold";
+
+                }
+
+            }
+            });
+
+            doc.save(`Planning_Tech_${quadrimestre}_${annee}.pdf`);
+
+  }
+    const USE_LOGO = true; 
+    const logo = new Image();
+    if (USE_LOGO) {
+        logo.onload = () => generatePDF(true);
+        logo.onerror = () => generatePDF(false);
+        logo.src = "Logo/Logo.png";
+    }
+    else {
+        generatePDF(false);
+    }
 }
 // ===== Utilitaire pour convertir CSS rgb → [r,g,b] =====
 function cssToRgb(cssColor) {

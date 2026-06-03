@@ -11,10 +11,17 @@ function clearSelection() {
 
 function saveCell(td) {
     if (!window.IS_ADMIN) return;
+
+    console.log(
+        "SAVE",
+        td.dataset.date,
+        td.dataset.empId
+    );
+
     updateCell(
         td.dataset.date,
         parseInt(td.dataset.ligne),
-        td.dataset.emp,
+        td.dataset.empId,   // 🔥 correction ici
         {
             html: td.innerHTML,
             bg: window.getComputedStyle(td).backgroundColor,

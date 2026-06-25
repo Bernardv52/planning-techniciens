@@ -1,4 +1,4 @@
-
+import { COLLECTION } from "./planning-core.js";
 
 // ======================================================
 // JOURS FÉRIÉS
@@ -22,16 +22,16 @@ export function calculerPaques(annee) {
     return new Date(annee, mois - 1, jour);
 }
 
-export function getJoursFeries(annee) {
+export function getJoursFeriesRaw(annee) {
     const feries = [
-        new Date(annee, 0, 1),
-        new Date(annee, 4, 1),
-        new Date(annee, 4, 8),
-        new Date(annee, 6, 14),
-        new Date(annee, 7, 15),
-        new Date(annee, 10, 1),
-        new Date(annee, 10, 11),
-        new Date(annee, 11, 25)
+        { date: new Date(annee, 0, 1), nom: "Jour de l'an" },
+        { date: new Date(annee, 4, 1), nom: "Fête du travail" },
+        { date: new Date(annee, 4, 8), nom: "Victoire 1945" },
+        { date: new Date(annee, 6, 14), nom: "Fête nationale" },
+        { date: new Date(annee, 7, 15), nom: "Assomption" },
+        { date: new Date(annee, 10, 1), nom: "Toussaint" },
+        { date: new Date(annee, 10, 11), nom: "Armistice" },
+        { date: new Date(annee, 11, 25), nom: "Noël" }
     ];
 
     const paques = calculerPaques(annee);
@@ -40,11 +40,38 @@ export function getJoursFeries(annee) {
 
     const ascension = new Date(paques);
     ascension.setDate(paques.getDate() + 39);
-
-    feries.push(lundiPaques, ascension);
-
-    return feries.map(d => formatDateKey(d));
+    const pentecoteLundi = new Date(paques);
+    pentecoteLundi.setDate(paques.getDate() + 50);
+    feries.push(
+            { date: lundiPaques, nom: "Lundi de Pâques" },
+            { date: ascension, nom: "Ascension" },
+            { date: pentecoteLundi, nom: "Lundi de Pentecôte" }
+        );
+    // 👉 on trie par date
+    feries.sort((a, b) => a.date - b.date);
+    return feries;
 }
+export function getJoursFeries(annee) {
+    return getJoursFeriesRaw(annee).map(f =>
+        formatDateKey(f.date)
+    );
+}
+/* export async function getJoursFeriesActifs(annee) {
+
+    const feries = getJoursFeries(annee);
+
+    const snap = await getDoc(doc(db, COLLECTION, String(annee)));
+
+    if (!snap.exists()) return feries;
+
+    const data = snap.data();
+
+    const exclus = data.joursFeriesExclus || [];
+
+    return feries.filter(f =>
+        !exclus.includes(formatDateKey(f.date))
+    );
+} */
 export function getDateRange(bloc, year) {
 
     let start, end;

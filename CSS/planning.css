@@ -42,6 +42,10 @@ table{
 .loading {
     opacity: 0.5;
 }
+#loginPage,
+#appPage {
+    display: none;
+}
 /* Fin ajout */
 .top-bar {
     position: sticky;
@@ -118,18 +122,6 @@ display: inline-block;
     padding: 4px;
     vertical-align: middle;
 }
-/* #planning td {
-
-    height: 32px;
-    min-height: 32px;
-    border: 1px solid black;
-    padding: 6px 4px; 
-    text-align: center;
-    vertical-align: middle;
-    white-space: normal;
-    word-break: break-word;
-    
-} */
 
 #planning td {
     border: 1px solid black;
@@ -191,6 +183,12 @@ display: inline-block;
 }
 .toolbar {
     margin-bottom: 10px;
+    /*ajout*/
+    display: flex;
+    align-items: center; /* Aligne tous les éléments parfaitement au centre sur la ligne */
+    gap: 10px;           /* Crée un espace régulier entre chaque bouton */
+    flex-wrap: wrap;     /* Permet de revenir à la ligne proprement si l'écran est petit */
+    
 }
 
 .color-btn {
@@ -222,5 +220,78 @@ display: inline-block;
     display: flex;
     justify-content: space-between;
 }
+.ident{
+    margin-bottom: 15px;
+    
+}
+.inpid{
+    margin-left: 27px;
+}
+
+.btn{   
+    margin-top: 15px;
+    margin-left: 105px;
+}
+/* Style applicable aux BOUTONS (les conteneurs) */
+.btnsuivret {
+    /*width: 35px; */           
+    height: 32px;            
+    background: #f0f0f0;     /* Optionnel : un léger fond gris pour matérialiser le bouton*/
+    border: 1px solid #999;  /* Optionnel : une fine bordure pour l'intégrer au reste de la toolbar */
+    border-radius: 4px;      /* Coins légèrement arrondis comme vos autres éléments */
+    cursor: pointer;         
+    padding: 6px 12px;        /* Un peu d'espace interne pour que l'image ne colle pas aux bords */
+    display: inline-flex;    
+    align-items: center;
+    justify-content: center;
+}
+
+/* Effet au survol pour que ça fasse "vrai bouton" */
+.btnsuivret:hover {
+    background: #e0e0e0;
+    border-color: #999;
+}
+
+/* Style applicable spécifiquement aux IMAGES */
+.btnsuivret img {
+    width: 100%;             
+    height: 100%;            
+    object-fit: contain;     /* Conserve parfaitement les proportions du texte sur l'image */
+    display: block;
+}
+.btnsuivret:disabled {
+    opacity: 0.4;
+    cursor:auto;
+    /*filter: grayscale(1);*/
+}
+.top-bar button {
+    margin-left: 15px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+#messageIndex {
+    position: fixed;
+    top: 6%;
+    left: 30%;
+    transform: translate(-30%);
+    padding: 10px 6px;
+    border-radius: 6px;
+    width: 200px;
+    display: none;
+    
+}
+
+#messageIndex.success {
+    background: rgb(223, 239, 180);
+    color: #008321;
+    font-weight: bold;
+}
+
+#messageIndex.error {
+    background: rgb(237, 211, 211);
+    color: #ff021b;
+    font-weight: bold;
+}
+ 
 
 

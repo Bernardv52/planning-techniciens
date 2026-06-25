@@ -139,10 +139,10 @@ async function exportPDF() {
             const dataColWidth =   
                 ( usableWidth - dateColWidth) / (nbColonnes - 1);
 
-                console.log({
+               /*  console.log({
                 nbColonnes,
                 dataColWidth
-                });
+                }); */
 
             // ===== Tableau =====
             doc.autoTable({
@@ -157,7 +157,8 @@ async function exportPDF() {
                     valign: "middle",
                     halign: "center",
                     overflow: "linebreak",   // 🔥 force retour à la ligne
-                // minCellHeight: 6,
+                    minCellHeight: 6,
+                    lineWidth: 0.1,
                 
                 },
 
@@ -168,7 +169,19 @@ async function exportPDF() {
             didParseCell: function(data) {
                 // largeur UNIQUEMENT
                 // colonnes techniciens
-
+                /* if (data.section === "body") {
+                    console.log(
+                        "Ligne:", data.row.index,
+                        "Colonne:", data.column.index,
+                        "Texte:", JSON.stringify(data.cell.text)
+                    );
+                }
+                 if (data.cell.raw) {
+                    console.log(
+                        "HTML:",
+                        JSON.stringify(data.cell.raw.innerHTML)
+                    );
+                } */
                 if(data.column.index>0){
 
                     data.cell.styles.cellWidth =

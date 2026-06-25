@@ -37,7 +37,7 @@ export function cleanOrphanEmployees(blocs, validIds) {
  */
 export function refreshPlanning() {
 
-    console.log("♻️ refreshPlanning");
+    //console.log("♻️ refreshPlanning");
     renderPlanning(); // construit DOM
 
     // ⚠️ éviter double binding

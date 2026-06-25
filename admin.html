@@ -6,23 +6,60 @@
         <link rel="stylesheet" href="./CSS/admin.css">
     </head>
     <body>
-        <h1>Administration</h1>
-        <table id="usersTable" border="1">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Rôle</th>
-            <th>Action</th>
-            <th>Action2</th>
-        </tr>
-    </thead>
+         <button id="retourPlanningBtn"class="btn">
+             Retour au planning
+         </button>
+         <div id="message"></div>
+        <h1 class="admin">Administration du planning des techniciens</h1>
+        <div id="adminContainer">
+            <div id="usersContainer">
+                <h2>Tableau des utilisateurs</h2>
+                <h3>Ajouter des utilisateurs et leur donner un rôle. (Admin ou User).</h3>
+                <h4>User est un simple utilisateur qui n'a pas la possibilité d'écrire sur le planning.</h4>
+                 <button id="addUserBtn">Ajouter utilisateur</button>
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th class="header email">Email</th>
+                            <th class="header role">Rôle</th>
+                            <th class="header">Sauvegarde</th>
+                            <th class="header">Suppression</th>
+                        </tr>
+                    </thead>
 
-    <tbody>
+                    <tbody>
 
-    </tbody>
-</table>
-<button id="addUserBtn">Ajouter utilisateur</button>
+                    </tbody>
+                </table>
+               
+            </div>
+             <div id="calendarContainer">
+                
+                <h2>Configuration du calendrier</h2>
+                 <h3>Déselectionner les jours non fériés de l'entreprise après avoir choisi l'année concernée.</h3> 
+                 <h4>Ne pas oublier d'enregistrer la modification.</h4> 
+                 <div class="calendarRow">
+                        <table id="holidayTable">
+                            <thead>
+                                <tr>
+                                    <th class="header">Actif</th>
+                                    <th class="header">Jour férié</th>
+                                    <th class="header">Nom</th>
+                                </tr>
+                            </thead>
+                            <tbody id="holidayBody"></tbody>
+                        </table>
+                        <div class="calendarYearSide">
+                                <label class="header" for="holidayYear">Année :</label>
+                                <select id="holidayYear"></select>
+                        </div>
+                </div>
+                <button class="btn" id="saveHolidaysBtn">
+                    Enregistrer
+                </button>
 
-<script type="module" src="./JS/admin.js"></script>
+            </div>
+        </div>
+        <script type="module" src="./JS/admin.js"></script>
     </body>
 </html>

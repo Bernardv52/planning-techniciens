@@ -5,6 +5,7 @@ import { renderPlanning } from "./planning-render.js";
 import { cleanOrphanEmployees } from "./planning-edit.js";
 //let isDraggingColumn = false;
 let dragIndex = null;
+
 export function activerDragAndDropColonnes() {
     if (!window.IS_ADMIN) return;
     const table = document.getElementById("planning");
@@ -28,7 +29,7 @@ export function activerDragAndDropColonnes() {
             e => e.id === th.dataset.empId
         );
 
-            console.log("🚀 DRAG START :", dragIndex);
+            //console.log("🚀 DRAG START :", dragIndex);
         };
 
         th.ondragover = (e) => {
@@ -95,14 +96,14 @@ export function activerDragAndDropColonnes() {
 
                 renderPlanning();
 
-                console.log("✅ Drag & Drop OK");
+                //console.log("✅ Drag & Drop OK");
 
             } catch (err) {
 
-                console.error(
+                /* console.error(
                     "❌ Erreur drag and drop :",
                     err
-                );
+                ); */
             }
 
             dragIndex = null;
@@ -128,7 +129,7 @@ export function rendreHeadersInteractifs() {
         // =========================
         const empId = th.dataset.empId;
         const empName = th.dataset.empName || "[SANS NOM]";
-        console.log("HEADER =", empId, empName);
+        //console.log("HEADER =", empId, empName);
         if (!empId) return;
         // =========================
         // RENOMMER (CLICK GAUCHE)
@@ -247,7 +248,7 @@ export function rendreHeadersInteractifs() {
 
         renderPlanning();
 
-        console.log("DELETE OK :", empName);
+        //console.log("DELETE OK :", empName);
      };
  });
      
@@ -260,7 +261,7 @@ export function initSelects() {
     const anneeActuelle = new Date().getFullYear();
 
     // remplir années
-    for (let i = -2; i <= 2; i++) {
+    for (let i = -3; i <= 2; i++) {
         const y = anneeActuelle + i;
         const opt = document.createElement("option");
         opt.value = y;
@@ -344,24 +345,27 @@ export function initUI() {
     // 🔴 SUPPRESSION TECH
    const select = document.getElementById("removeEmployeSelect");
    const deleteBtn = document.getElementById("deleteEmployeBtn");
-   console.log("deleteBtn =", deleteBtn);
-console.log("select =", select);
+  /*  console.log("deleteBtn =", deleteBtn);
+   console.log("select =", select); */
 
 if (select && deleteBtn) {
-
     // =========================
     // REMPLIR LE SELECT
     // =========================
     select.innerHTML = "";
+    // option vide sélectionnée par défaut
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "Choisissez dans la liste";
+    emptyOption.selected = true;
+    select.appendChild(emptyOption);
     if (!planning?.employes?.length) return;
 
         planning.employes.forEach(emp => {
-
+            
             const option = document.createElement("option");
-
             option.value = emp.id;
             option.textContent = emp.name;
-
             select.appendChild(option);
     });
     deleteBtn.onclick = async () => {

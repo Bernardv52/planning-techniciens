@@ -1,0 +1,218 @@
+#adminContainer{
+
+    display:flex;
+    align-items:flex-start;
+    gap:40px;
+    margin:30px;
+    flex-wrap: wrap;
+}
+#usersContainer{
+    
+    /* flex: 1;
+    min-width: 430px; */
+}
+#calendarContainer{
+    /* flex: 1;
+    min-width: 430px; */
+}
+#usersContainer,
+#calendarContainer {
+    flex: 1;
+    min-width: 430px;
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+}
+.calendarRow {
+    display: flex;
+    align-items: flex-start; /* aligne avec le haut du tableau */
+    gap: 20px;
+    
+}
+
+.calendarYearSide {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    margin-top: 34px;
+}
+#holidayTable{
+ border: 1px solid #666;
+ margin-top: 34px
+ 
+}
+.holidayItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#holidayYear{
+    height: 26px;
+    width: 62px;
+    border-radius: 4px;
+    border: 2px solid #060606;  
+    background-color:rgb(51, 45, 104);
+    color: rgb(255, 255, 255);
+    font-size:14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.tdcheck{
+    background-color:  rgb(51, 45, 104);
+    color: white;
+    font-weight: bold;
+}
+.list{
+    background-color: rgb(233, 232, 238);
+    color: #0a0a0a;
+    font-weight: bold;
+}
+.admin {
+    text-align: center;
+}
+#usersTable{
+    /*margin-top: 6px;*/
+    border: 1px solid #666;
+}
+#addUserBtn{
+
+    margin-bottom: 10px;
+    height: 26px;
+    border-radius: 4px;
+    border: 2px solid #060606;  
+    background-color:rgb(51, 45, 104);
+    color: rgb(255, 255, 255);
+    font-size:13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.5s, color 0.5s;
+    
+}
+#addUserBtn:hover{
+    background-color: rgb(191, 187, 224);
+    color:black;
+    border-color: #0d6efd;
+}
+
+.deleteBtn{
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    background-color: rgb(227, 17, 17);
+    color: white;
+    font-weight: bold;
+    padding: 4px 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+   
+}
+
+.deleteBtn:hover{
+    background-color: rgb(240, 165, 165);
+    color: black;
+    border-color: #e80e44;
+     
+   /* border: 1px solid red;*/
+}
+.saveBtn{
+    padding: 4px 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    background-color: rgb(51, 45, 104);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+.saveBtn:hover{
+    background-color:rgb(191, 187, 224);
+    color:black;
+    border-color: #0d6efd;
+}
+.btn{
+    margin-top: 10px;
+    height: 26px;
+    width:130px;
+    border-radius: 4px;
+    border: 2px solid #060606;  
+    background-color:rgb(51, 45, 104);
+    color: rgb(255, 255, 255);
+    font-size:13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.5s, color 0.5s;
+}
+.btn:hover{
+    background-color: rgb(191, 187, 224);
+    color:black;
+    border-color: #0d6efd;
+}
+#retourPlanningBtn{
+    width: 150px;
+    height: 40px;
+    /*min-width: 35px;*/
+}
+
+.roleSelect{
+     /* background-color: rgb(51, 45, 104);
+     color: white;
+    font-weight: bold; */
+    padding: 4px 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    background-color:  rgb(51, 45, 104);
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+.roleSelect:hover {
+    border-color: #0d6efd;
+    background-color:rgb(191, 187, 224);
+    color:black;
+}
+.header{
+   
+     background-color: rgb(191, 187, 224);
+      padding: 4px 5px;
+      min-width: 10px;
+      font-weight: bold;
+}
+.email{
+    min-width:50px;
+    max-width: 300px;
+}
+.role{
+    min-width: 60px;
+}
+.lignes{
+    padding: 4px 8px;
+     background-color: rgb(233, 232, 238);
+}
+#message {
+    position: fixed;
+    top: 20px;
+    left: 200px;
+    padding: 10px 6px;
+    border-radius: 6px;
+    width: 154px;
+    display: none;
+    
+}
+
+#message.success {
+    background: rgb(223, 239, 180);
+    color: #008321;
+    font-weight: bold;
+}
+
+#message.error {
+    background: rgb(237, 211, 211);
+    color: #ff021b;
+    font-weight: bold;
+}
+
+

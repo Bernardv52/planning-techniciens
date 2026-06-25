@@ -1,5 +1,6 @@
 import { getAuth, signInWithEmailAndPassword } 
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { afficherMessageIndex } from "../barreTools"; 
 
 const auth = getAuth();
 
@@ -10,9 +11,15 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    console.log("Connecté :", userCredential.user);
+    
+    //console.log("Connecté :", userCredential.user);
   } catch (error) {
-    console.error("Erreur login :", error.code, error.message);
+      if (error.code === "auth/invalid-credential") {
+          afficherMessageIndex("Email ou mot de passe incorrect !", "error");
+          return;
+      }
+    //console.error("Erreur login :", error.code, error.message);
+    afficherMessageIndex("Une erreur est survenue !", "error");
   }
 
 });

@@ -3,6 +3,7 @@ import { db } from "./APIS/firebase.js";
 
 export let planning = {};
 let isUpdating = false;
+let isUndoRedo = false;
 let loading = true;
 export let currentDoc = null;
 export let ignoreSnapshot = false;
@@ -23,36 +24,39 @@ export function listenPlanning(docId, onUpdate) {
     const unsubscribe = onSnapshot(ref, (snap) => {
 
         if (!snap.exists()) return;
-        if (isUpdating) {
-            console.log("snapshot ignoré (update local)");
+        if (isUpdating && !isUndoRedo) {
+            //console.log("snapshot ignoré (update local)");
             return;
         }
         if (ignoreSnapshot) return;
         const data = snap.data();
+        /* console.log("SNAPSHOT DOC =", currentDoc);
+        console.log(data); */
         
 
         planning.employes = data.employes || [];
         planning.blocs = data.blocs || {};
         planning.presence = data.presence || {};
+        // 🔥 AJOUT ICI
+        planning.joursFeriesExclus = data.joursFeriesExclus || [];
 
         loading = false;
 
         // 🔥 SEUL POINT DE RENDER AUTOMATIQUE
-        //onUpdate(planning);
 
-
-        loading = false;
-        console.log("🔥 SNAPSHOT DATA:", data);
-        console.log("📦 PLANNING FINAL:", planning);
+        /* console.log("🔥 SNAPSHOT DATA:", data);
+        console.log("📦 PLANNING FINAL:", planning); */
         onUpdate(planning);
     });
-
-    //return unsubscribe;
+    
+     return unsubscribe;
+     
 }
 
 export async function updateCell(date, ligne, emp, cellData) {
     if (!window.IS_ADMIN) return;
     if (!currentDoc) return;
+   
     isUpdating = true;
     const ref = doc(db, COLLECTION, currentDoc);
     const bloc = document.getElementById("moisSelect").value;

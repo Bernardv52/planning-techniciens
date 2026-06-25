@@ -12,7 +12,7 @@ export async function migrateYear(oldCol, newCol, docId) {
 
     const data = snap.data();
 
-    console.log("📦 Migration :", docId);
+    //console.log("📦 Migration :", docId);
 
     // =========================
     // 1. EMPLOYÉS (ON GARDE LES IDS EXISTANTS)
@@ -68,7 +68,7 @@ export async function migrateYear(oldCol, newCol, docId) {
         presence: data.presence || {}
     });
 
-    console.log("✅ Migration OK :", docId);
+    //console.log("✅ Migration OK :", docId);
 }
 export async function migrateAll() {
 
@@ -81,7 +81,7 @@ export async function migrateAll() {
         await migrateYear(oldCol, newCol, year);
     }
 
-    console.log("🎉 Migration terminée");
+    //console.log("🎉 Migration terminée");
 }
 
 //pour l appeler dans la console

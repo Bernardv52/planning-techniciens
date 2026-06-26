@@ -15,18 +15,69 @@ table{
     width: 100%;
     border-collapse: collapse;
 }
-#logoPlanning{
-    margin: 0,30,10,30;
-    width: 20%;
-    height: 3%;
+#loginPage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-
-.planning-container {
+#headerPlanning{
     display: flex;
     align-items: center;
-    gap: 10px;
+    /*gap: 30px;*/
+    flex-wrap: wrap;
 }
+.logo{
+    text-align:center;
+    margin-top:40px;
+}
+.logoPlanning {
+    margin-right: 150px;
+    height:auto;
+}
+.logoPlanning img{
+    width:350px;
+    height:auto;
+}
+
+.h2{
+    margin-top: 7px;
+}
+.logo img{
+    width:550px;
+    height:auto;
+}
+#loginBox{
+ margin-top:40px;
+ 
+}
+.ident{
+   font-size: 18px;
+   margin-bottom: 15px;
+}
+.inpid{
+    height:30px;
+    width:200px;
+    margin-left:41px;
+    
+}
+.inppw{
+    height:30px;
+    width:200px;
+}
+.label{
+    font-size: 25px;
+}
+#loginBtn{
+    height:30px;
+    width:200px;
+    font-size:20px;
+}
+/* .planning-container{
+    align-items: center;
+} */
 #an{
+    width: 82px;
+    padding-left: 12px;
     background-color: beige;
     color: #b31111;
     font-size: 2rem;
@@ -219,13 +270,6 @@ display: inline-block;
     margin-top: 15px;
     display: flex;
     justify-content: space-between;
-}
-.ident{
-    margin-bottom: 15px;
-    
-}
-.inpid{
-    margin-left: 27px;
 }
 
 .btn{   

@@ -8,27 +8,36 @@
 </head>
 
 <body>
-    <div>
-        <img src="./Logo/logo.png">
-    </div>
+    
     <div id="messageIndex"></div>
     <div id="loginPage">
+        <div class="logo">
+            <img src="./Logo/logo.png">
+        </div>
         <div id="loginBox">
-            <h3>Connexion</h3>
-            <div class="ident"> Identifiant :
+            <h1>Connexion</h1>
+            <div class="ident"> 
+                <lbl class="label" for="email">Identifiant :</lbl>
                 <input class="inpid" type="email" id="email">
             </div>
-            Mot de passe :
-            <input class="inp" type="password" id="password">
+            <div class="ident">  
+                <lbl class="label" for="password">Mot de passe  :</lbl> 
+                <input class="inppw" type="password" id="password">
+            </div>    
             <button id="loginBtn">Se connecter</button>
         </div>
     </div>
     <div id="appPage" style="display:none;">
         <button id="logoutBtn">Logout</button>
-        <div class="planning-container">
-            <h2>Planning de l'année</h2>
-            <h2 id="an"></h2>
-        </div>
+         <div id="headerPlanning">
+            <div class="logoPlanning">
+                <img src="./Logo/logo.png">
+            </div>
+            <div class="planning-container">
+                <h2 class="h2">Planning de l'année</h2>
+                <h2 id="an"></h2>
+            </div>
+         </div>
         <div class="toolbar">
             <span>Couleur :</span>
             <button class="color-btn" data-color="#000000" style="background:#000000"></button>

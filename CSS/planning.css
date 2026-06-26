@@ -315,13 +315,15 @@ display: inline-block;
 }
 #messageIndex {
     position: fixed;
-    top: 6%;
-    left: 30%;
+    top: 7%;
+    left: 47%;
     transform: translate(-30%);
     padding: 10px 6px;
     border-radius: 6px;
     width: 200px;
     display: none;
+    font-weight: bold;
+    text-align: center;
     
 }
 

@@ -38,10 +38,10 @@ function afficherMessage(texte, type ) {
     msg.textContent = texte;
     msg.className = type;
     msg.style.display = "block";
-
+    msg.style.animation = "messageAnimation 6s ease";
     setTimeout(() => {
         msg.style.display = "none";
-    }, 4000);
+    }, 6000);
 }
 //console.log("🔥 ADMIN JS OK");
 function initHolidayConfig() {
@@ -320,10 +320,18 @@ document.getElementById("addUserBtn")
 ?.addEventListener("click", async () => {
 
     const email = prompt("Email utilisateur ?");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) return;
 
     const password = prompt("Mot de passe ?");
     if (!password) return;
+    if (!emailRegex.test(email)) {
+        afficherMessage(
+            "Saisir une adresse e-mail valide !",
+            "error"
+        );
+        return;
+    }
     if (password.length < 6) {
         afficherMessage(
             "Le mot de passe doit contenir au moins 6 caractères !",
@@ -360,9 +368,18 @@ document.getElementById("addUserBtn")
 
     } catch (err) {
 
-        //console.error(err);
+            if (err.code === "auth/email-already-in-use") {
+            afficherMessage(
+                "Cette adresse e-mail existe déjà !",
+                "error"
+            );
+            return;
+        }
 
-      afficherMessage("Erreur à la création de l'identifiant !","error");
+        afficherMessage(
+            "Erreur à la création de l'identifiant !",
+            "error"
+        );
     }
 });
 

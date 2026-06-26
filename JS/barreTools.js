@@ -12,10 +12,10 @@ export function afficherMessageIndex(texte, type ) {
     msg.textContent = texte;
     msg.className = type;
     msg.style.display = "block";
-
+    msg.style.animation = "messageAnimation 6s ease";
     setTimeout(() => {
         msg.style.display = "none";
-    }, 4000);
+    }, 6000);
 }
 function clearSelection() {
     selectedCells.forEach(c => c.style.outline = "");

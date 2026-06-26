@@ -6,15 +6,7 @@
     margin:30px;
     flex-wrap: wrap;
 }
-#usersContainer{
-    
-    /* flex: 1;
-    min-width: 430px; */
-}
-#calendarContainer{
-    /* flex: 1;
-    min-width: 430px; */
-}
+
 #usersContainer,
 #calendarContainer {
     flex: 1;
@@ -194,13 +186,16 @@
 }
 #message {
     position: fixed;
-    top: 20px;
-    left: 200px;
+    top: 7%;
+    left: 14%;
+    transform: translate(-30%);
     padding: 10px 6px;
     border-radius: 6px;
-    width: 154px;
+    width: 200px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: center;
     display: none;
-    
 }
 
 #message.success {
